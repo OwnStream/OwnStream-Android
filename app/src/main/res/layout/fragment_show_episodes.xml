@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context=".ui.fragment.ShowEpisodesFragment">
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/season_picker"
+		style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginHorizontal="16dp">
+
+		<AutoCompleteTextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="none"
+			tools:text="Season 01" />
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/recycler"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:clipToPadding="false"
+		android:paddingHorizontal="16dp"
+		android:paddingVertical="8dp"
+		tools:listitem="@layout/item_episode" />
+
+</LinearLayout>

@@ -1,0 +1,26 @@
+<resources>
+	<string name="app_name">OwnStream</string>
+	<string name="login_instance_url">Instance URL</string>
+	<string name="login_username">Username</string>
+	<string name="login_password">Password</string>
+	<string name="login_submit">Log in</string>
+	<string name="login_error_null_response">Invalid response received.</string>
+	<string name="login_success">Logged in as %s.</string>
+	<string name="nav_home">Home</string>
+	<!-- TODO: Remove or change this placeholder text -->
+	<string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="shelf_more">More</string>
+	<string name="home_error">Failed to load home shelves</string>
+	<string name="accessibility_image_poster">Poster for a movie/show</string>
+	<string name="action_watch">Watch</string>
+	<string name="error_unexpected_type">Unexpected type \'%s\'</string>
+	<string name="nav_movie">Movie</string>
+	<string name="error_video_not_found">Video not found</string>
+	<string name="action_watch_episode">Watch S%02dE%02d</string>
+	<string name="nav_show">Show</string>
+	<string name="show_details">Details</string>
+	<string name="show_episodes">Episodes</string>
+	<string name="error_season_load_failed">Failed to load seasons</string>
+	<string name="template_episode_title">E%02d: %s</string>
+	<string name="template_season_title">Season %d</string>
+</resources>
