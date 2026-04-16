@@ -17,10 +17,13 @@
 	<string name="nav_movie">Movie</string>
 	<string name="error_video_not_found">Video not found</string>
 	<string name="action_watch_episode">Watch S%02dE%02d</string>
+	<string name="action_continue">Continue watching</string>
+	<string name="action_continue_episode">Continue S%02dE%02d</string>
 	<string name="nav_show">Show</string>
 	<string name="show_details">Details</string>
 	<string name="show_episodes">Episodes</string>
 	<string name="error_season_load_failed">Failed to load seasons</string>
 	<string name="template_episode_title">E%02d: %s</string>
 	<string name="template_season_title">Season %d</string>
+	<string name="progress_loading">Loading progress…</string>
 </resources>
