@@ -10,13 +10,29 @@
 	android:focusable="true"
 	android:orientation="vertical">
 
-	<com.google.android.material.imageview.ShapeableImageView
-		android:id="@+id/poster"
+	<FrameLayout
 		android:layout_width="266dp"
-		android:layout_height="150dp"
-		android:background="?colorSecondaryContainer"
-		android:scaleType="centerCrop"
-		app:shapeAppearanceOverlay="@style/roundedCorners" />
+		android:layout_height="150dp">
+
+		<com.google.android.material.imageview.ShapeableImageView
+			android:id="@+id/poster"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="?colorSecondaryContainer"
+			android:scaleType="centerCrop"
+			app:shapeAppearanceOverlay="@style/roundedCorners" />
+
+		<com.google.android.material.progressindicator.LinearProgressIndicator
+			android:id="@+id/progress"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:layout_margin="8dp"
+			android:visibility="gone"
+			tools:max="100"
+			tools:progress="68"
+			tools:visibility="visible" />
+	</FrameLayout>
 
 	<LinearLayout
 		android:layout_width="match_parent"

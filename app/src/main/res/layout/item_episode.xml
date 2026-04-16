@@ -9,12 +9,28 @@
 	android:focusable="true"
 	android:orientation="horizontal">
 
-	<com.google.android.material.imageview.ShapeableImageView
-		android:id="@+id/thumbnail"
+	<FrameLayout
 		android:layout_width="160dp"
-		android:layout_height="90dp"
-		android:background="?colorSecondaryContainer"
-		app:shapeAppearanceOverlay="@style/roundedCorners" />
+		android:layout_height="90dp">
+
+		<com.google.android.material.imageview.ShapeableImageView
+			android:id="@+id/thumbnail"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="?colorSecondaryContainer"
+			app:shapeAppearanceOverlay="@style/roundedCorners" />
+
+		<com.google.android.material.progressindicator.LinearProgressIndicator
+			android:id="@+id/progress"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:layout_margin="8dp"
+			android:visibility="gone"
+			tools:max="100"
+			tools:progress="68"
+			tools:visibility="visible" />
+	</FrameLayout>
 
 	<LinearLayout
 		android:layout_width="0dp"

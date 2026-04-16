@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.R
+import dev.kuylar.ownstream.Utils.visibleIf
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.databinding.FragmentShowEpisodesBinding
@@ -23,6 +24,7 @@ import dev.kuylar.recyclerviewbuilder.ExtensibleRecyclerAdapter
 import dev.kuylar.recyclerviewbuilder.RecyclerViewBuilder
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class ShowEpisodesFragment : Fragment() {
@@ -53,6 +55,9 @@ class ShowEpisodesFragment : Fragment() {
 					item.translatedTitle ?: item.originalTitle
 				)
 				binding.summary.text = item.translatedSummary ?: item.originalSummary
+				binding.progress.max = 100
+				binding.progress.progress = item.progress?.roundToInt() ?: 0
+				binding.progress.visibleIf(item.progress != null)
 				Glide.with(context).load(item.thumbnail).into(binding.thumbnail)
 				item.videos.firstOrNull()?.let { video ->
 					binding.root.setOnClickListener {

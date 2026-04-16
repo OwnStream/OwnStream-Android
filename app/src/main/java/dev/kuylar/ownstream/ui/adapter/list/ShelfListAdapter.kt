@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import dev.kuylar.ownstream.R
+import dev.kuylar.ownstream.Utils.visibleIf
 import dev.kuylar.ownstream.api.models.ShelfItem
 import dev.kuylar.ownstream.databinding.ItemShelfEntryPosterBinding
 import dev.kuylar.ownstream.databinding.ItemShelfEntryThumbnailBinding
 import dev.kuylar.ownstream.ui.fragment.EpisodeBottomSheetFragment
+import kotlin.math.roundToInt
 
 class ShelfListAdapter(val fragment: Fragment) :
 	ListAdapter<ShelfItem, ShelfListAdapter.ViewHolder>(object :
@@ -59,6 +61,9 @@ class ShelfListAdapter(val fragment: Fragment) :
 			Glide.with(binding.root).load(item.image).into(binding.poster)
 			binding.title.text = item.title
 			binding.subtitle.text = item.subtitle.joinToString(" \u2022 ");
+			binding.progress.max = 100
+			binding.progress.progress = item.watchProgress?.roundToInt() ?: 0
+			binding.progress.visibleIf(item.watchProgress != null)
 
 			binding.root.setOnClickListener {
 				when (item.type) {

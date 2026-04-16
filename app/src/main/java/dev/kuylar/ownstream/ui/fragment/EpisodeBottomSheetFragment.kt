@@ -18,6 +18,7 @@ import dev.kuylar.ownstream.databinding.FragmentEpisodeBottomSheetBinding
 import dev.kuylar.ownstream.ui.activity.PlayerActivity
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class EpisodeBottomSheetFragment : BottomSheetDialogFragment() {
@@ -61,6 +62,9 @@ class EpisodeBottomSheetFragment : BottomSheetDialogFragment() {
 
 		binding.title.text = episode.translatedTitle ?: episode.originalTitle
 		binding.summary.text = episode.translatedSummary ?: episode.originalSummary
+		binding.progress.max = 100
+		binding.progress.progress = episode.progress?.roundToInt() ?: 0
+		binding.progress.visibleIf(episode.progress != null)
 		Glide.with(this).load(episode.thumbnail).into(binding.thumbnail)
 
 		binding.buttonWatch.visibleIf(video != null)
