@@ -90,12 +90,6 @@
 				android:text="@string/action_watch_episode" />
 		</LinearLayout>
 
-		<View
-			android:layout_width="match_parent"
-			android:layout_height="1dp"
-			android:layout_marginBottom="8dp"
-			android:background="?android:attr/listDivider" />
-
 		<com.google.android.material.tabs.TabLayout
 			android:id="@+id/tab_layout"
 			android:layout_width="match_parent"
