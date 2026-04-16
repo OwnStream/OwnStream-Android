@@ -14,6 +14,7 @@ import dev.kuylar.ownstream.R
 import dev.kuylar.ownstream.api.models.ShelfItem
 import dev.kuylar.ownstream.databinding.ItemShelfEntryPosterBinding
 import dev.kuylar.ownstream.databinding.ItemShelfEntryThumbnailBinding
+import dev.kuylar.ownstream.ui.fragment.EpisodeBottomSheetFragment
 
 class ShelfListAdapter(val fragment: Fragment) :
 	ListAdapter<ShelfItem, ShelfListAdapter.ViewHolder>(object :
@@ -73,6 +74,15 @@ class ShelfListAdapter(val fragment: Fragment) :
 							R.id.nav_show,
 							Bundle().apply { putString("id", item.id) }
 						)
+					}
+
+					"episode" -> {
+						val f = EpisodeBottomSheetFragment()
+						f.arguments = Bundle().apply {
+							putString("contentId", item.id)
+							putString("episodeId", item.episodeId)
+						}
+						f.show(fragment.parentFragmentManager, "episodeBottomSheet")
 					}
 
 					else -> {
