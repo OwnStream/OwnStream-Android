@@ -20,6 +20,7 @@ data class Content(
 	val seasonCount: Int?,
 	val episodeCount: Int?,
 	val videoCount: Int?,
+	val runtime: String,
 	val ageRatings: Map<String, String>,
 	val externalIds: Map<String, String>,
 )

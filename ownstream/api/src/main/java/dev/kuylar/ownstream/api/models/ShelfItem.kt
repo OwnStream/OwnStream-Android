@@ -8,7 +8,8 @@ data class ShelfItem(
 	val id: String,
 	val episodeId: String? = null,
 	val videoId: String? = null,
-	val subtitle: List<String>,
 	val title: String,
-	val image: String,
+	val subtitle: List<String>,
+	val image: String?,
+	val watchProgress: Float?
 )

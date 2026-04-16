@@ -77,9 +77,19 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 	suspend fun getContentDetails(id: String) = get<Content>("/api/content/$id/details")
 	suspend fun getSeasons(id: String) = get<List<Season>>("/api/content/$id/seasons")
 	suspend fun getEpisode(id: String) = get<Episode>("/api/content/episode/$id")
+	suspend fun getNextEpisode(id: String) = get<Episode>("/api/content/episode/$id/next")
 	suspend fun getEpisodes(id: String, season: Int) = get<List<Episode>>("/api/content/$id/seasons/$season/episodes")
-
 	suspend fun getVideo(id: String) = get<Video>("/api/video/$id")
+	suspend fun getProgress(videoOrEpisodeId: String) = get<WatchProgressResponse>("/api/progress/$videoOrEpisodeId")
+	suspend fun updateWatchProgress(videoId: String, videoLength: Int, watchedMilliseconds: Int) = post<Any>(
+		"/api/progress/update",
+		UpdateWatchProgressRequest(videoId, videoLength, watchedMilliseconds, null)
+	)
+	suspend fun updateWatchProgress(videoId: String, markWatched: Boolean) = post<Any>(
+		"/api/progress/update",
+		UpdateWatchProgressRequest(videoId, null, null, markWatched)
+	)
+	suspend fun getEpisodeToWatch(contentId: String) = get<EpisodeToWatchResponse>("/api/progress/upNext/$contentId")
 
 	fun getMediaUrl(videoId: String, file: String) =
 		"${instanceHost.trimEnd('/')}/Media/$videoId/$file"
