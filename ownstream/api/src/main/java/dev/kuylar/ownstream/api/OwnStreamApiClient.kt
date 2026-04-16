@@ -81,9 +81,9 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 	suspend fun getEpisodes(id: String, season: Int) = get<List<Episode>>("/api/content/$id/seasons/$season/episodes")
 	suspend fun getVideo(id: String) = get<Video>("/api/video/$id")
 	suspend fun getProgress(videoOrEpisodeId: String) = get<WatchProgressResponse>("/api/progress/$videoOrEpisodeId")
-	suspend fun updateWatchProgress(videoId: String, videoLength: Int, watchedMilliseconds: Int) = post<Any>(
+	suspend fun updateWatchProgress(videoId: String, videoLength: Int, watchedMilliseconds: Int, markWatched: Boolean? = null) = post<Any>(
 		"/api/progress/update",
-		UpdateWatchProgressRequest(videoId, videoLength, watchedMilliseconds, null)
+		UpdateWatchProgressRequest(videoId, videoLength, watchedMilliseconds, markWatched)
 	)
 	suspend fun updateWatchProgress(videoId: String, markWatched: Boolean) = post<Any>(
 		"/api/progress/update",

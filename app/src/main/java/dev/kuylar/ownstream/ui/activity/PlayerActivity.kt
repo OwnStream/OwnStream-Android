@@ -23,6 +23,9 @@ import dev.kuylar.ownstream.api.models.Video
 import dev.kuylar.ownstream.api.models.WatchProgressResponse
 import dev.kuylar.ownstream.databinding.ActivityPlayerBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,6 +38,7 @@ class PlayerActivity : AppCompatActivity() {
 	private lateinit var episodeId: String
 	private lateinit var video: Video
 	private lateinit var episode: Episode
+	private var progressUpdateJob: Job? = null
 
 	@Inject
 	lateinit var client: OwnStreamApiClient
@@ -128,10 +132,45 @@ class PlayerActivity : AppCompatActivity() {
 			player.prepare()
 			progressResp?.position?.toLong()?.let { player.seekTo(it) }
 			player.play()
+			startProgressSync()
 		}
 	}
 
+	private fun startProgressSync() {
+		progressUpdateJob?.cancel()
+		progressUpdateJob = lifecycleScope.launch {
+			while (isActive) {
+				delay(5_000)
+				sendProgressUpdate()
+			}
+		}
+	}
+
+	private fun sendProgressUpdate() {
+		if (!this::player.isInitialized || !player.isPlaying) return
+
+		val duration = player.duration
+		val position = player.currentPosition
+
+		if (duration <= 0 || position < 0) return
+
+		lifecycleScope.launch(Dispatchers.IO) {
+			try {
+				val finished = (position.toFloat() / duration.toFloat()) > .9
+				client.updateWatchProgress(videoId, duration.toInt(), position.toInt(), finished)
+			} catch (e: Exception) {
+				Log.w(this.javaClass.name, "Failed to update watch progress", e)
+			}
+		}
+	}
+
+	override fun onPause() {
+		super.onPause()
+		sendProgressUpdate()
+	}
+
 	override fun onDestroy() {
+		progressUpdateJob?.cancel()
 		if (this::player.isInitialized) {
 			player.stop()
 			player.release()
