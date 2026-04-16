@@ -20,6 +20,7 @@ import dev.kuylar.ownstream.Utils.firstOf
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.api.models.Video
+import dev.kuylar.ownstream.api.models.WatchProgressResponse
 import dev.kuylar.ownstream.databinding.ActivityPlayerBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,6 +72,9 @@ class PlayerActivity : AppCompatActivity() {
 			val episodeResp = withContext(Dispatchers.IO) {
 				client.getEpisode(episodeId).response
 			}
+			val progressResp = withContext(Dispatchers.IO) {
+				client.getProgress(videoId).response
+			}
 			if (videoResp == null || episodeResp == null) {
 				finish()
 				return@launch
@@ -120,13 +124,9 @@ class PlayerActivity : AppCompatActivity() {
 					)
 				}
 			}.build()
-			Log.i(this@PlayerActivity.javaClass.name, "Playing ${mediaItem.localConfiguration?.uri}")
-			Log.i(this@PlayerActivity.javaClass.name, "Subtitles: ${mediaItem.localConfiguration?.subtitleConfigurations?.size ?: 0}")
-			mediaItem.localConfiguration?.subtitleConfigurations?.forEachIndexed { i, it ->
-				Log.i(this@PlayerActivity.javaClass.name, "- [$i/${it.id}] (${it.mimeType}) ${it.language}, ${it.label} @ ${it.uri}")
-			}
 			player.setMediaItem(mediaItem)
 			player.prepare()
+			progressResp?.position?.toLong()?.let { player.seekTo(it) }
 			player.play()
 		}
 	}
