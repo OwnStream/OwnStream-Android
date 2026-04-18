@@ -2,6 +2,7 @@ package dev.kuylar.ownstream.ui.activity
 
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
@@ -132,6 +133,7 @@ class PlayerActivity : AppCompatActivity() {
 			player.prepare()
 			progressResp?.position?.toLong()?.let { player.seekTo(it) }
 			player.play()
+			window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 			startProgressSync()
 		}
 	}
@@ -166,6 +168,7 @@ class PlayerActivity : AppCompatActivity() {
 
 	override fun onPause() {
 		super.onPause()
+		window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 		sendProgressUpdate()
 	}
 
