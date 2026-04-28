@@ -2,11 +2,14 @@ package dev.kuylar.ownstream.tvleanback
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-/**
- * Details activity class that loads [VideoDetailsFragment] class.
- */
+@AndroidEntryPoint
 class DetailsActivity : FragmentActivity() {
+	val mErrorFragment = ErrorFragment()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -15,6 +18,17 @@ class DetailsActivity : FragmentActivity() {
 			supportFragmentManager.beginTransaction()
 				.replace(R.id.details_fragment, VideoDetailsFragment())
 				.commitNow()
+		}
+	}
+
+	fun onError(it: Throwable) {
+		supportFragmentManager
+			.beginTransaction()
+			.add(R.id.main_browse_fragment, mErrorFragment)
+			.commit()
+		lifecycleScope.launch {
+			delay(50)
+			mErrorFragment.setErrorContent(it)
 		}
 	}
 

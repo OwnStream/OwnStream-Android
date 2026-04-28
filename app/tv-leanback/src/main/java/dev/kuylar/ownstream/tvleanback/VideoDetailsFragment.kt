@@ -26,18 +26,27 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import dagger.hilt.android.AndroidEntryPoint
+import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.api.models.Content
+import dev.kuylar.ownstream.api.models.Episode
+import dev.kuylar.ownstream.api.models.Season
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-import java.util.Collections
+import javax.inject.Inject
+import kotlin.math.roundToInt
 
-/**
- * A wrapper fragment for leanback details screens.
- * It shows a detailed view of video and its metadata plus related videos.
- */
+@AndroidEntryPoint
 class VideoDetailsFragment : DetailsSupportFragment() {
+	@Inject
+	lateinit var client: OwnStreamApiClient
 
 	private lateinit var mDetailsBackground: DetailsSupportFragmentBackgroundController
 	private lateinit var mPresenterSelector: ClassPresenterSelector
@@ -49,30 +58,54 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 
 		mDetailsBackground = DetailsSupportFragmentBackgroundController(this)
 
-		var selectedMovie: Movie? =
-			activity!!.intent.getSerializableExtra(DetailsActivity.MOVIE) as Movie?
-		if (selectedMovie != null) {
-			mPresenterSelector = ClassPresenterSelector()
-			mAdapter = ArrayObjectAdapter(mPresenterSelector)
-			setupDetailsOverviewRow(selectedMovie)
-			setupDetailsOverviewRowPresenter(selectedMovie)
-			setupRelatedMovieListRow()
-			adapter = mAdapter
-			initializeBackground(selectedMovie)
-			onItemViewClickedListener = ItemViewClickedListener(selectedMovie)
+		val contentId = requireActivity().intent.getStringExtra(DetailsActivity.MOVIE)
+		if (contentId != null) {
+			loadContent(contentId)
 		} else {
-			val intent = Intent(activity!!, MainActivity::class.java)
+			val intent = Intent(requireActivity(), MainActivity::class.java)
 			startActivity(intent)
 		}
 	}
 
-	private fun initializeBackground(movie: Movie) {
+	private fun loadContent(id: String) {
+		mPresenterSelector = ClassPresenterSelector()
+		mAdapter = ArrayObjectAdapter(mPresenterSelector)
+		lifecycleScope.launch {
+			runCatching {
+				withContext(Dispatchers.IO) {
+					Triple(
+						client.getContentDetails(id).response!!,
+						client.getEpisodeToWatch(id).response!!,
+						client.getSeasons(id).response!!
+					)
+				}
+			}.onFailure {
+				(activity as? DetailsActivity)?.onError(it)
+			}.onSuccess {
+				val (content, upNext, seasons) = it
+				val isContinue = upNext.continueWatching != null
+				val episode = upNext.continueWatching ?: upNext.upNext
+				val videoId = episode?.videos?.firstOrNull()?.id
+				setupDetailsOverviewRow(content, isContinue, episode, videoId)
+				setupDetailsOverviewRowPresenter(videoId)
+				if (content.type == "Tv") {
+					setupSeasonRows(content.id, seasons)
+				}
+				adapter = mAdapter
+				initializeBackground(content)
+				onItemViewClickedListener = ItemViewClickedListener()
+			}
+		}
+	}
+
+	private fun initializeBackground(content: Content) {
+		if (content.images.backdrop == null) return
 		mDetailsBackground.enableParallax()
-		Glide.with(activity!!)
+		Glide.with(requireActivity())
 			.asBitmap()
 			.centerCrop()
 			.error(R.drawable.default_background)
-			.load(movie?.backgroundImageUrl)
+			.load(content.images.backdrop)
 			.into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
 				override fun onResourceReady(
 					bitmap: Bitmap,
@@ -84,60 +117,64 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 			})
 	}
 
-	private fun setupDetailsOverviewRow(movie: Movie) {
-		Log.d(TAG, "doInBackground: " + movie.toString())
-		val row = DetailsOverviewRow(movie)
-		row.imageDrawable = ContextCompat.getDrawable(activity!!, R.drawable.default_background)
-		val width = convertDpToPixel(activity!!, DETAIL_THUMB_WIDTH)
-		val height = convertDpToPixel(activity!!, DETAIL_THUMB_HEIGHT)
-		Glide.with(activity!!)
-			.load(movie.cardImageUrl)
-			.centerCrop()
+	private fun setupDetailsOverviewRow(
+		content: Content,
+		isContinue: Boolean,
+		episode: Episode?,
+		videoId: String?
+	) {
+		val row = DetailsOverviewRow(content)
+		row.imageDrawable =
+			ContextCompat.getDrawable(requireActivity(), R.drawable.default_background)
+		val width = convertDpToPixel(requireActivity(), DETAIL_THUMB_WIDTH)
+		val height = convertDpToPixel(requireActivity(), DETAIL_THUMB_HEIGHT)
+		Glide.with(requireActivity())
+			.load(content.images.poster)
+			.fitCenter()
 			.error(R.drawable.default_background)
 			.into<SimpleTarget<Drawable>>(object : SimpleTarget<Drawable>(width, height) {
 				override fun onResourceReady(
 					drawable: Drawable,
 					transition: Transition<in Drawable>?
 				) {
-					Log.d(TAG, "details overview card image url ready: " + drawable)
 					row.imageDrawable = drawable
 					mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size())
 				}
 			})
 
+
 		val actionAdapter = ArrayObjectAdapter()
 
-		actionAdapter.add(
-			Action(
-				ACTION_WATCH_TRAILER,
-				resources.getString(R.string.watch_trailer_1),
-				resources.getString(R.string.watch_trailer_2)
+		if (episode != null && videoId != null) {
+			actionAdapter.add(
+				Action(
+					ACTION_WATCH,
+					getString(if (isContinue) R.string.watch_continue else R.string.watch),
+					if (content.type == "Tv") getString(
+						R.string.watch_episode_template,
+						episode.seasonNumber,
+						episode.episodeNumber
+					) else null
+				)
 			)
-		)
-		actionAdapter.add(
-			Action(
-				ACTION_RENT,
-				resources.getString(R.string.rent_1),
-				resources.getString(R.string.rent_2)
+		} else if (episode != null) {
+			actionAdapter.add(
+				Action(
+					ACTION_ERROR,
+					getString(R.string.watch_unavailable)
+				)
 			)
-		)
-		actionAdapter.add(
-			Action(
-				ACTION_BUY,
-				resources.getString(R.string.buy_1),
-				resources.getString(R.string.buy_2)
-			)
-		)
+		}
 		row.actionsAdapter = actionAdapter
 
 		mAdapter.add(row)
 	}
 
-	private fun setupDetailsOverviewRowPresenter(movie: Movie) {
+	private fun setupDetailsOverviewRowPresenter(videoId: String?) {
 		// Set detail background.
 		val detailsPresenter = FullWidthDetailsOverviewRowPresenter(DetailsDescriptionPresenter())
 		detailsPresenter.backgroundColor =
-			ContextCompat.getColor(activity!!, R.color.selected_background)
+			ContextCompat.getColor(requireActivity(), R.color.selected_background)
 
 		// Hook up transition element.
 		val sharedElementHelper = FullWidthDetailsOverviewSharedElementHelper()
@@ -147,39 +184,54 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 		detailsPresenter.setListener(sharedElementHelper)
 		detailsPresenter.isParticipatingEntranceTransition = true
 
-		detailsPresenter.onActionClickedListener = OnActionClickedListener { action ->
-			if (action.id == ACTION_WATCH_TRAILER) {
-				val intent = Intent(activity!!, PlaybackActivity::class.java)
-				intent.putExtra(DetailsActivity.MOVIE, movie)
-				startActivity(intent)
-			} else {
-				Toast.makeText(activity!!, action.toString(), Toast.LENGTH_SHORT).show()
+		if (videoId != null)
+			detailsPresenter.onActionClickedListener = OnActionClickedListener { action ->
+				when (action.id) {
+					ACTION_WATCH -> {
+						val intent = Intent(requireActivity(), PlaybackActivity::class.java)
+						intent.putExtra("videoId", videoId)
+						startActivity(intent)
+					}
+
+					else -> {
+						Toast.makeText(requireActivity(), action.toString(), Toast.LENGTH_SHORT)
+							.show()
+					}
+				}
 			}
-		}
 		mPresenterSelector.addClassPresenter(DetailsOverviewRow::class.java, detailsPresenter)
 	}
 
-	private fun setupRelatedMovieListRow() {
-		val subcategories = arrayOf(getString(R.string.related_movies))
-		val list = MovieList.list
+	private fun setupSeasonRows(id: String, seasons: List<Season>) {
+		lifecycleScope.launch {
+			val allSeasons = withContext(Dispatchers.IO) {
+				seasons.map { s ->
+					runCatching {
+						Pair(s, client.getEpisodes(id, s.index).response!!)
+					}.onFailure {
+						Log.e("VideoDetailsFragment", "Failed to load season ${id}/${s.index}", it)
+					}.getOrDefault(Pair(s, emptyList()))
+				}.associate { it }
+			}
 
-		Collections.shuffle(list)
-		val listRowAdapter = ArrayObjectAdapter(CardPresenter())
-		for (j in 0 until NUM_COLS) {
-			listRowAdapter.add(list[j % 5])
+			allSeasons.forEach { (season, episodes) ->
+				val listRowAdapter = ArrayObjectAdapter(CardPresenter())
+
+				listRowAdapter.addAll(0, episodes)
+
+				val header = HeaderItem(0, getString(R.string.season_title_template, season.index))
+				mAdapter.add(ListRow(header, listRowAdapter))
+				mPresenterSelector.addClassPresenter(ListRow::class.java, ListRowPresenter())
+			}
 		}
-
-		val header = HeaderItem(0, subcategories[0])
-		mAdapter.add(ListRow(header, listRowAdapter))
-		mPresenterSelector.addClassPresenter(ListRow::class.java, ListRowPresenter())
 	}
 
 	private fun convertDpToPixel(context: Context, dp: Int): Int {
 		val density = context.applicationContext.resources.displayMetrics.density
-		return Math.round(dp.toFloat() * density)
+		return (dp.toFloat() * density).roundToInt()
 	}
 
-	private inner class ItemViewClickedListener(private val movie: Movie) :
+	private inner class ItemViewClickedListener() :
 		OnItemViewClickedListener {
 		override fun onItemClicked(
 			itemViewHolder: Presenter.ViewHolder,
@@ -188,13 +240,12 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 			row: Row
 		) {
 			if (item is Movie) {
-				Log.d(TAG, "Item: " + item.toString())
-				val intent = Intent(activity!!, DetailsActivity::class.java)
-				intent.putExtra(resources.getString(R.string.movie), movie)
+				val intent = Intent(requireActivity(), DetailsActivity::class.java)
+				//intent.putExtra(resources.getString(R.string.movie), movie)
 
 				val bundle =
 					ActivityOptionsCompat.makeSceneTransitionAnimation(
-						activity!!,
+						requireActivity(),
 						(itemViewHolder.view as ImageCardView).mainImageView!!,
 						DetailsActivity.SHARED_ELEMENT_NAME
 					)
@@ -207,13 +258,10 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 	companion object {
 		private val TAG = "VideoDetailsFragment"
 
-		private val ACTION_WATCH_TRAILER = 1L
-		private val ACTION_RENT = 2L
-		private val ACTION_BUY = 3L
+		private val ACTION_WATCH = 1L
+		private val ACTION_ERROR = 0L
 
 		private val DETAIL_THUMB_WIDTH = 274
-		private val DETAIL_THUMB_HEIGHT = 274
-
-		private val NUM_COLS = 10
+		private val DETAIL_THUMB_HEIGHT = 411
 	}
 }

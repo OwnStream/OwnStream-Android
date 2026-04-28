@@ -38,6 +38,7 @@ import com.bumptech.glide.request.transition.Transition
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Shelf
+import dev.kuylar.ownstream.api.models.ShelfItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -149,18 +150,24 @@ class MainFragment : BrowseSupportFragment() {
 			row: Row
 		) {
 
-			if (item is Movie) {
-				Log.d(TAG, "Item: " + item.toString())
-				val intent = Intent(requireActivity(), DetailsActivity::class.java)
-				intent.putExtra(DetailsActivity.MOVIE, item)
+			if (item is ShelfItem) {
+				when (item.type) {
+					"video", "episode" -> {
+						// TODO: Player
+					}
 
-				val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-					requireActivity(),
-					(itemViewHolder.view as ImageCardView).mainImageView!!,
-					DetailsActivity.SHARED_ELEMENT_NAME
-				)
-					.toBundle()
-				startActivity(intent, bundle)
+					else -> {
+						val intent = Intent(requireActivity(), DetailsActivity::class.java)
+						intent.putExtra(DetailsActivity.MOVIE, item.id)
+
+						val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+							requireActivity(),
+							(itemViewHolder.view as ImageCardView).mainImageView!!,
+							DetailsActivity.SHARED_ELEMENT_NAME
+						).toBundle()
+						startActivity(intent, bundle)
+					}
+				}
 			} else if (item is String) {
 				if (item.contains(getString(R.string.error_fragment))) {
 					(activity as? MainActivity)?.onError(Exception("Test exception"))

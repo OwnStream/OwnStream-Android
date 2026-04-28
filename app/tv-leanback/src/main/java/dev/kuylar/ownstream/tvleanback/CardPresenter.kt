@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.ViewGroup
 
 import com.bumptech.glide.Glide
+import dev.kuylar.ownstream.api.models.Episode
+import dev.kuylar.ownstream.api.models.Season
 import dev.kuylar.ownstream.api.models.ShelfItem
 import kotlin.properties.Delegates
 
@@ -42,22 +44,40 @@ class CardPresenter : Presenter() {
 	}
 
 	override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-		val movie = item as ShelfItem
-		val cardView = viewHolder.view as ImageCardView
+		when (item) {
+			is ShelfItem -> {
+				val cardView = viewHolder.view as ImageCardView
 
-		Log.d(TAG, "onBindViewHolder")
-		if (movie.image != null) {
-			cardView.titleText = movie.title
-			cardView.contentText = movie.subtitle.joinToString(" \u2022 ")
-			cardView.setMainImageDimensions(
-				if (movie.type == "episode" || movie.type == "video") CARD_WIDTH_LANDSCAPE else CARD_WIDTH_PORTRAIT,
-				CARD_HEIGHT
-			)
-			Glide.with(viewHolder.view.context)
-				.load(movie.image)
-				.centerCrop()
-				.error(mDefaultCardImage)
-				.into(cardView.mainImageView!!)
+				Log.d(TAG, "onBindViewHolder")
+				if (item.image != null) {
+					cardView.titleText = item.title
+					cardView.contentText = item.subtitle.joinToString(" \u2022 ")
+					cardView.setMainImageDimensions(
+						if (item.type == "episode" || item.type == "video") CARD_WIDTH_LANDSCAPE else CARD_WIDTH_PORTRAIT,
+						CARD_HEIGHT
+					)
+					Glide.with(viewHolder.view.context)
+						.load(item.image)
+						.centerCrop()
+						.error(mDefaultCardImage)
+						.into(cardView.mainImageView!!)
+				}
+			}
+
+			is Episode -> {
+				val cardView = viewHolder.view as ImageCardView
+				cardView.titleText =
+					viewHolder.view.context.getString(R.string.episode_title_template, item.episodeNumber, item.translatedTitle)
+				cardView.contentText =
+					viewHolder.view.context.getString(R.string.episode_content_template, item.runtime)
+				cardView.setMainImageDimensions(CARD_WIDTH_LANDSCAPE, CARD_HEIGHT)
+
+				Glide.with(viewHolder.view.context)
+					.load(item.thumbnail)
+					.centerCrop()
+					.error(mDefaultCardImage)
+					.into(cardView.mainImageView!!)
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 package dev.kuylar.ownstream.tvleanback
 
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter
+import dev.kuylar.ownstream.api.models.Content
 
 class DetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
 
@@ -8,10 +9,11 @@ class DetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
 		viewHolder: AbstractDetailsDescriptionPresenter.ViewHolder,
 		item: Any
 	) {
-		val movie = item as Movie
+		val movie = item as Content
 
-		viewHolder.title.text = movie.title
-		viewHolder.subtitle.text = movie.studio
-		viewHolder.body.text = movie.description
+		// TODO: Localization
+		viewHolder.title.text = movie.translatedTitle
+		viewHolder.subtitle.text = movie.translatedTagline
+		viewHolder.body.text = movie.translatedDescription
 	}
 }
