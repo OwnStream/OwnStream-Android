@@ -28,6 +28,7 @@
 	<string name="setup_account_username">Username</string>
 	<string name="setup_account_password">Password</string>
 	<string name="setup_account_continue">Continue</string>
-	<string name="logging_in">Logging in, please wait...</string>
+	<string name="logging_in">Logging in, please wait…</string>
 	<string name="login_fail">Failed to log in: %s</string>
+	<string name="error_shelves">Failed to load shelves</string>
 </resources>

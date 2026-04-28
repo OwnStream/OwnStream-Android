@@ -30,15 +30,23 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import dagger.hilt.android.AndroidEntryPoint
+import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.api.models.Shelf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-/**
- * Loads a grid of cards with movies to browse.
- */
+@AndroidEntryPoint
 class MainFragment : BrowseSupportFragment() {
+	@Inject
+	lateinit var client: OwnStreamApiClient
 
 	private val mHandler = Handler(Looper.myLooper()!!)
 	private lateinit var mBackgroundManager: BackgroundManager
@@ -47,16 +55,15 @@ class MainFragment : BrowseSupportFragment() {
 	private var mBackgroundTimer: Timer? = null
 	private var mBackgroundUri: String? = null
 
+	@Deprecated("Deprecated in Java")
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		Log.i(TAG, "onCreate")
+		@Suppress("DEPRECATION")
 		super.onActivityCreated(savedInstanceState)
 
 		prepareBackgroundManager()
-
 		setupUIElements()
-
 		loadRows()
-
 		setupEventListeners()
 	}
 
@@ -67,43 +74,29 @@ class MainFragment : BrowseSupportFragment() {
 	}
 
 	private fun prepareBackgroundManager() {
-
 		mBackgroundManager = BackgroundManager.getInstance(activity)
-		mBackgroundManager.attach(activity!!.window)
-		mDefaultBackground = ContextCompat.getDrawable(activity!!, R.drawable.default_background)
+		mBackgroundManager.attach(requireActivity().window)
+		mDefaultBackground =
+			ContextCompat.getDrawable(requireActivity(), R.drawable.default_background)
 		mMetrics = DisplayMetrics()
-		activity!!.windowManager.defaultDisplay.getMetrics(mMetrics)
+		requireActivity().windowManager.defaultDisplay.getMetrics(mMetrics)
 	}
 
 	private fun setupUIElements() {
-		title = getString(R.string.browse_title)
+		title = "OwnStream"
 		// over title
 		headersState = BrowseSupportFragment.HEADERS_ENABLED
 		isHeadersTransitionOnBackEnabled = true
 
 		// set fastLane (or headers) background color
-		brandColor = ContextCompat.getColor(activity!!, R.color.fastlane_background)
+		brandColor = ContextCompat.getColor(requireActivity(), R.color.fastlane_background)
 		// set search icon color
-		searchAffordanceColor = ContextCompat.getColor(activity!!, R.color.search_opaque)
+		searchAffordanceColor = ContextCompat.getColor(requireActivity(), R.color.search_opaque)
 	}
 
 	private fun loadRows() {
-		val list = MovieList.list
-
 		val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
 		val cardPresenter = CardPresenter()
-
-		for (i in 0 until NUM_ROWS) {
-			if (i != 0) {
-				Collections.shuffle(list)
-			}
-			val listRowAdapter = ArrayObjectAdapter(cardPresenter)
-			for (j in 0 until NUM_COLS) {
-				listRowAdapter.add(list[j % 5])
-			}
-			val header = HeaderItem(i.toLong(), MovieList.MOVIE_CATEGORY[i])
-			rowsAdapter.add(ListRow(header, listRowAdapter))
-		}
 
 		val gridHeader = HeaderItem(NUM_ROWS.toLong(), "PREFERENCES")
 
@@ -115,11 +108,36 @@ class MainFragment : BrowseSupportFragment() {
 		rowsAdapter.add(ListRow(gridHeader, gridRowAdapter))
 
 		adapter = rowsAdapter
+
+		lifecycleScope.launch {
+			val shelves = runCatching {
+				withContext(Dispatchers.IO) {
+					client.getHomeShelves().response!!
+				}
+			}.onFailure {
+				Toast.makeText(
+					requireContext(),
+					getString(R.string.error_shelves),
+					Toast.LENGTH_LONG
+				).show()
+			}.getOrElse {
+				emptyList()
+			}
+
+			shelves.forEachIndexed { index, shelf ->
+				val listRowAdapter = ArrayObjectAdapter(cardPresenter)
+				listRowAdapter.addAll(0, shelf.items)
+				val header = HeaderItem(shelf.type.hashCode().toLong(), shelf.title)
+				rowsAdapter.add(index, ListRow(header, listRowAdapter))
+			}
+			rowsAdapter.notifyItemRangeChanged(0, shelves.size + 1)
+			setSelectedPosition(0, false)
+		}
 	}
 
 	private fun setupEventListeners() {
 		setOnSearchClickedListener {
-			Toast.makeText(activity!!, "Implement your own in-app search", Toast.LENGTH_LONG)
+			Toast.makeText(requireActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
 				.show()
 		}
 
@@ -137,11 +155,11 @@ class MainFragment : BrowseSupportFragment() {
 
 			if (item is Movie) {
 				Log.d(TAG, "Item: " + item.toString())
-				val intent = Intent(activity!!, DetailsActivity::class.java)
+				val intent = Intent(requireActivity(), DetailsActivity::class.java)
 				intent.putExtra(DetailsActivity.MOVIE, item)
 
 				val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-					activity!!,
+					requireActivity(),
 					(itemViewHolder.view as ImageCardView).mainImageView!!,
 					DetailsActivity.SHARED_ELEMENT_NAME
 				)
@@ -149,10 +167,10 @@ class MainFragment : BrowseSupportFragment() {
 				startActivity(intent, bundle)
 			} else if (item is String) {
 				if (item.contains(getString(R.string.error_fragment))) {
-					val intent = Intent(activity!!, BrowseErrorActivity::class.java)
+					val intent = Intent(requireActivity(), BrowseErrorActivity::class.java)
 					startActivity(intent)
 				} else {
-					Toast.makeText(activity!!, item, Toast.LENGTH_SHORT).show()
+					Toast.makeText(requireActivity(), item, Toast.LENGTH_SHORT).show()
 				}
 			}
 		}
@@ -173,7 +191,7 @@ class MainFragment : BrowseSupportFragment() {
 	private fun updateBackground(uri: String?) {
 		val width = mMetrics.widthPixels
 		val height = mMetrics.heightPixels
-		Glide.with(activity!!)
+		Glide.with(requireActivity())
 			.load(uri)
 			.centerCrop()
 			.error(mDefaultBackground)
@@ -208,7 +226,12 @@ class MainFragment : BrowseSupportFragment() {
 			view.layoutParams = ViewGroup.LayoutParams(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
 			view.isFocusable = true
 			view.isFocusableInTouchMode = true
-			view.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.default_background))
+			view.setBackgroundColor(
+				ContextCompat.getColor(
+					requireActivity(),
+					R.color.default_background
+				)
+			)
 			view.setTextColor(Color.WHITE)
 			view.gravity = Gravity.CENTER
 			return Presenter.ViewHolder(view)

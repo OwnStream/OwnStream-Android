@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.ViewGroup
 
 import com.bumptech.glide.Glide
+import dev.kuylar.ownstream.api.models.ShelfItem
 import kotlin.properties.Delegates
 
 /**
@@ -41,16 +42,19 @@ class CardPresenter : Presenter() {
 	}
 
 	override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-		val movie = item as Movie
+		val movie = item as ShelfItem
 		val cardView = viewHolder.view as ImageCardView
 
 		Log.d(TAG, "onBindViewHolder")
-		if (movie.cardImageUrl != null) {
+		if (movie.image != null) {
 			cardView.titleText = movie.title
-			cardView.contentText = movie.studio
-			cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
+			cardView.contentText = movie.subtitle.joinToString(" \u2022 ")
+			cardView.setMainImageDimensions(
+				if (movie.type == "episode" || movie.type == "video") CARD_WIDTH_LANDSCAPE else CARD_WIDTH_PORTRAIT,
+				CARD_HEIGHT
+			)
 			Glide.with(viewHolder.view.context)
-				.load(movie.cardImageUrl)
+				.load(movie.image)
 				.centerCrop()
 				.error(mDefaultCardImage)
 				.into(cardView.mainImageView!!)
@@ -76,7 +80,8 @@ class CardPresenter : Presenter() {
 	companion object {
 		private val TAG = "CardPresenter"
 
-		private val CARD_WIDTH = 313
+		private val CARD_WIDTH_LANDSCAPE = 313
+		private val CARD_WIDTH_PORTRAIT = 117
 		private val CARD_HEIGHT = 176
 	}
 }
