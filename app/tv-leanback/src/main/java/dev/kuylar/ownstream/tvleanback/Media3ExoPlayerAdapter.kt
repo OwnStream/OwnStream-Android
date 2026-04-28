@@ -14,6 +14,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
 import android.view.SurfaceHolder
+import kotlin.math.max
 
 class Media3ExoPlayerAdapter(
 	context: Context,
@@ -50,7 +51,9 @@ class Media3ExoPlayerAdapter(
 		}
 
 		override fun onVideoSizeChanged(videoSize: VideoSize) {
-			callback?.onVideoSizeChanged(this@Media3ExoPlayerAdapter, videoSize.width, videoSize.height)
+			callback?.onVideoSizeChanged(this@Media3ExoPlayerAdapter, videoSize.width,
+				max(videoSize.height, 1)
+			)
 		}
 
 		override fun onPlayerError(error: PlaybackException) {
