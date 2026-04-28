@@ -30,6 +30,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.postDelayed
 import androidx.lifecycle.lifecycleScope
 
 import com.bumptech.glide.Glide
@@ -128,7 +129,9 @@ class MainFragment : BrowseSupportFragment() {
 				rowsAdapter.add(index, ListRow(header, listRowAdapter))
 			}
 			rowsAdapter.notifyItemRangeChanged(0, shelves.size + 1)
-			setSelectedPosition(0, true)
+			view?.postDelayed(50) {
+				setSelectedPosition(0, true)
+			}
 		}
 	}
 
@@ -153,7 +156,16 @@ class MainFragment : BrowseSupportFragment() {
 			if (item is ShelfItem) {
 				when (item.type) {
 					"video", "episode" -> {
-						// TODO: Player
+						val intent = if (item.videoId != null) {
+							val intent = Intent(requireActivity(), PlaybackActivity::class.java)
+							intent.putExtra("videoId", item.videoId)
+							intent
+						} else {
+							val intent = Intent(requireActivity(), DetailsActivity::class.java)
+							intent.putExtra(DetailsActivity.MOVIE, item.id)
+							intent
+						}
+						startActivity(intent)
 					}
 
 					else -> {
