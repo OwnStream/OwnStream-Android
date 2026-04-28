@@ -98,7 +98,7 @@ class MainFragment : BrowseSupportFragment() {
 		val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
 		val cardPresenter = CardPresenter()
 
-		val gridHeader = HeaderItem(NUM_ROWS.toLong(), "PREFERENCES")
+		val gridHeader = HeaderItem(-1L, "PREFERENCES")
 
 		val mGridPresenter = GridItemPresenter()
 		val gridRowAdapter = ArrayObjectAdapter(mGridPresenter)
@@ -115,11 +115,7 @@ class MainFragment : BrowseSupportFragment() {
 					client.getHomeShelves().response!!
 				}
 			}.onFailure {
-				Toast.makeText(
-					requireContext(),
-					getString(R.string.error_shelves),
-					Toast.LENGTH_LONG
-				).show()
+				(activity as? MainActivity)?.onError(it)
 			}.getOrElse {
 				emptyList()
 			}
@@ -131,7 +127,7 @@ class MainFragment : BrowseSupportFragment() {
 				rowsAdapter.add(index, ListRow(header, listRowAdapter))
 			}
 			rowsAdapter.notifyItemRangeChanged(0, shelves.size + 1)
-			setSelectedPosition(0, false)
+			setSelectedPosition(0, true)
 		}
 	}
 
@@ -167,8 +163,7 @@ class MainFragment : BrowseSupportFragment() {
 				startActivity(intent, bundle)
 			} else if (item is String) {
 				if (item.contains(getString(R.string.error_fragment))) {
-					val intent = Intent(requireActivity(), BrowseErrorActivity::class.java)
-					startActivity(intent)
+					(activity as? MainActivity)?.onError(Exception("Test exception"))
 				} else {
 					Toast.makeText(requireActivity(), item, Toast.LENGTH_SHORT).show()
 				}
@@ -214,7 +209,6 @@ class MainFragment : BrowseSupportFragment() {
 	}
 
 	private inner class UpdateBackgroundTask : TimerTask() {
-
 		override fun run() {
 			mHandler.post { updateBackground(mBackgroundUri) }
 		}
@@ -250,7 +244,5 @@ class MainFragment : BrowseSupportFragment() {
 		private val BACKGROUND_UPDATE_DELAY = 300
 		private val GRID_ITEM_WIDTH = 200
 		private val GRID_ITEM_HEIGHT = 200
-		private val NUM_ROWS = 6
-		private val NUM_COLS = 15
 	}
 }
