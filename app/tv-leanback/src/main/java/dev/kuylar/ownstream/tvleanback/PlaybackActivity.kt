@@ -2,8 +2,9 @@ package dev.kuylar.ownstream.tvleanback
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-/** Loads [PlaybackVideoFragment]. */
+@AndroidEntryPoint
 class PlaybackActivity : FragmentActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {

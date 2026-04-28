@@ -34,4 +34,5 @@
 	<string name="season_title_template">Season %d</string>
 	<string name="episode_title_template">%d - %s</string>
 	<string name="episode_content_template">%s</string>
+	<string name="video_episode_template">S%d E%d - %s</string>
 </resources>

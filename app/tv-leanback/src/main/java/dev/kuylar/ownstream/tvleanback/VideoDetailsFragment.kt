@@ -239,18 +239,26 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 			rowViewHolder: RowPresenter.ViewHolder,
 			row: Row
 		) {
-			if (item is Movie) {
-				val intent = Intent(requireActivity(), DetailsActivity::class.java)
-				//intent.putExtra(resources.getString(R.string.movie), movie)
+			when (item) {
+				is Content -> {
+					val intent = Intent(requireActivity(), DetailsActivity::class.java)
+					intent.putExtra(DetailsActivity.MOVIE, item.id)
 
-				val bundle =
-					ActivityOptionsCompat.makeSceneTransitionAnimation(
+					val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
 						requireActivity(),
 						(itemViewHolder.view as ImageCardView).mainImageView!!,
 						DetailsActivity.SHARED_ELEMENT_NAME
-					)
-						.toBundle()
-				startActivity(intent, bundle)
+					).toBundle()
+					startActivity(intent, bundle)
+				}
+
+				is Episode -> {
+					item.videos.firstOrNull()?.let { video ->
+						val intent = Intent(requireActivity(), PlaybackActivity::class.java)
+						intent.putExtra("videoId", video.id)
+						startActivity(intent)
+					}
+				}
 			}
 		}
 	}
