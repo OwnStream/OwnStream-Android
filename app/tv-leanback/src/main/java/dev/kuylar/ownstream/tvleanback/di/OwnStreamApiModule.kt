@@ -1,4 +1,4 @@
-package dev.kuylar.ownstream.di
+package dev.kuylar.ownstream.tvleanback.di
 
 import android.content.Context
 import dagger.Module
@@ -7,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.FragmentComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.kuylar.ownstream.BuildConfig
+import dev.kuylar.ownstream.tvleanback.BuildConfig
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 
 @Module
@@ -21,7 +21,7 @@ object OwnStreamApiModule {
 		val token = sp.getString("token", null)
 		val client = OwnStreamApiClient(
 			sp.getString("host", "https://invalid")!!,
-			"OwnStream-Android/${BuildConfig.VERSION_NAME} (Mobile)"
+			"OwnStream-Android/${BuildConfig.VERSION_NAME} (Tv-Leanback)"
 		)
 		token?.let { client.setAuth(it) }
 		client.setLocale("en_US")

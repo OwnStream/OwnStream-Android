@@ -1,0 +1,4 @@
+<resources>
+
+	<style name="Theme.OwnStream" parent="@style/Theme.Leanback" />
+</resources>

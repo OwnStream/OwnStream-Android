@@ -72,6 +72,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		return resp
 	}
 
+	suspend fun getInfo() = get<InstanceInfo>("/api/info")
 	suspend fun whoAmI() = get<UserResponse>("/api/auth/whoami")
 	suspend fun getHomeShelves() = get<List<Shelf>>("/api/home/shelves")
 	suspend fun getContentDetails(id: String) = get<Content>("/api/content/$id/details")

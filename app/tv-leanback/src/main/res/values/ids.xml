@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<item name="setup_instance_uri" type="id"/>
+	<item name="setup_instance_continue" type="id"/>
+	<item name="setup_account_username" type="id"/>
+	<item name="setup_account_password" type="id"/>
+	<item name="setup_account_continue" type="id"/>
+</resources>
