@@ -1,6 +1,5 @@
-package dev.kuylar.ownstream.tvleanback.presenter
+package dev.kuylar.ownstream.tvleanback.ui.presenter
 
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.ViewGroup
@@ -10,8 +9,7 @@ import com.bumptech.glide.Glide
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.api.models.ShelfItem
 import dev.kuylar.ownstream.tvleanback.R
-import dev.kuylar.ownstream.tvleanback.view.MaterialCardView
-import kotlin.properties.Delegates
+import dev.kuylar.ownstream.tvleanback.ui.view.MaterialCardView
 
 class CardPresenter : Presenter() {
 	private var mDefaultCardImage: Drawable? = null

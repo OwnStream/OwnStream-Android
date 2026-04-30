@@ -1,17 +1,17 @@
-package dev.kuylar.ownstream.tvleanback
+package dev.kuylar.ownstream.tvleanback.ui.fragment
 
-import android.graphics.Color
+import android.R
 import android.os.Bundle
 import android.view.View
 import androidx.core.net.toUri
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
-import androidx.leanback.media.MediaPlayerAdapter
-import androidx.leanback.media.PlaybackBannerControlGlue
 import androidx.leanback.widget.PlaybackControlsRow
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.tvleanback.ui.playback.CustomPlaybackControlGlue
+import dev.kuylar.ownstream.tvleanback.ui.playback.Media3ExoPlayerAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,7 +27,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		view.setBackgroundResource(android.R.color.black);
+		view.setBackgroundResource(R.color.black);
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +66,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 						?: "Video"
 			mTransportControlGlue.subtitle = if (video.content?.type == "Tv")
 				getString(
-					R.string.video_episode_template,
+					dev.kuylar.ownstream.tvleanback.R.string.video_episode_template,
 					video.episode?.seasonNumber,
 					video.episode?.episodeNumber,
 					video.episode?.translatedTitle ?: video.episode?.originalTitle

@@ -1,4 +1,4 @@
-package dev.kuylar.ownstream.tvleanback
+package dev.kuylar.ownstream.tvleanback.ui.presenter
 
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter
 import dev.kuylar.ownstream.api.models.Content

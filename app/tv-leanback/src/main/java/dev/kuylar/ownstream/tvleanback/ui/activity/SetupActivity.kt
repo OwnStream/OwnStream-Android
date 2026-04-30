@@ -1,11 +1,12 @@
-package dev.kuylar.ownstream.tvleanback
+package dev.kuylar.ownstream.tvleanback.ui.activity
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.GuidedStepSupportFragment
 import dagger.hilt.android.AndroidEntryPoint
-import dev.kuylar.ownstream.tvleanback.setup.SetupFragmentInstanceUri
+import dev.kuylar.ownstream.tvleanback.R
+import dev.kuylar.ownstream.tvleanback.ui.fragment.setup.SetupFragmentInstanceUri
 
 @AndroidEntryPoint
 class SetupActivity : FragmentActivity() {

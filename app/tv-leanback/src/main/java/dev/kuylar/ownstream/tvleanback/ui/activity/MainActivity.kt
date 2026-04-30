@@ -1,6 +1,5 @@
-package dev.kuylar.ownstream.tvleanback
+package dev.kuylar.ownstream.tvleanback.ui.activity
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +7,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.tvleanback.R
+import dev.kuylar.ownstream.tvleanback.ui.fragment.ErrorFragment
+import dev.kuylar.ownstream.tvleanback.ui.fragment.MainFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import javax.inject.Inject
 
 @AndroidEntryPoint

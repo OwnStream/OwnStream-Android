@@ -1,4 +1,4 @@
-package dev.kuylar.ownstream.tvleanback.presenter
+package dev.kuylar.ownstream.tvleanback.ui.presenter
 
 import android.text.TextUtils
 import android.view.LayoutInflater

@@ -1,10 +1,11 @@
-package dev.kuylar.ownstream.tvleanback
+package dev.kuylar.ownstream.tvleanback.ui.fragment
 
 import android.os.Bundle
 import android.view.View
 
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.ErrorSupportFragment
+import dev.kuylar.ownstream.tvleanback.R
 
 class ErrorFragment : ErrorSupportFragment() {
 	override fun onCreate(savedInstanceState: Bundle?) {

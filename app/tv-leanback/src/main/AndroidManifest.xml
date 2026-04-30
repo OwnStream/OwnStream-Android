@@ -20,12 +20,12 @@
 		android:theme="@style/Theme.OwnStream"
 		android:usesCleartextTraffic="true">
 		<activity
-			android:name=".SetupActivity"
+			android:name=".ui.activity.SetupActivity"
 			android:exported="false"
 			android:label="@string/title_activity_setup"
 			android:theme="@style/Theme.OwnStream" />
 		<activity
-			android:name=".MainActivity"
+			android:name=".ui.activity.MainActivity"
 			android:banner="@drawable/app_icon_your_company"
 			android:exported="true"
 			android:icon="@drawable/app_icon_your_company"
@@ -39,10 +39,10 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".DetailsActivity"
+			android:name=".ui.activity.DetailsActivity"
 			android:exported="false" />
 		<activity
-			android:name=".PlaybackActivity"
+			android:name=".ui.activity.PlaybackActivity"
 			android:exported="false" />
 		<activity
 			android:name=".BrowseErrorActivity"

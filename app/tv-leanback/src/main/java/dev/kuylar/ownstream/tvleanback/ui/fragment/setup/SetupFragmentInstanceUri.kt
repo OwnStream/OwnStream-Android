@@ -1,8 +1,6 @@
-package dev.kuylar.ownstream.tvleanback.setup
+package dev.kuylar.ownstream.tvleanback.ui.fragment.setup
 
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -12,7 +10,6 @@ import androidx.leanback.app.GuidedStepSupportFragment
 import androidx.leanback.widget.GuidanceStylist
 import androidx.leanback.widget.GuidedAction
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.tvleanback.BuildConfig
 import dev.kuylar.ownstream.tvleanback.R
@@ -85,7 +82,7 @@ class SetupFragmentInstanceUri : GuidedStepSupportFragment() {
 					"Connection success! Instance running ${it.type} version ${it.version}",
 					Toast.LENGTH_LONG
 				).show()
-				val sp = requireContext().getSharedPreferences("main", Context.MODE_PRIVATE)
+				val sp = requireContext().getSharedPreferences("main", MODE_PRIVATE)
 				sp.edit {
 					putString("host", url.toString())
 				}

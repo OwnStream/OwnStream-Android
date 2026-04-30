@@ -1,10 +1,9 @@
-package dev.kuylar.ownstream.tvleanback.setup
+package dev.kuylar.ownstream.tvleanback.ui.fragment.setup
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.edit
 import androidx.leanback.app.GuidedStepSupportFragment
@@ -13,7 +12,7 @@ import androidx.leanback.widget.GuidedAction
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
-import dev.kuylar.ownstream.tvleanback.MainActivity
+import dev.kuylar.ownstream.tvleanback.ui.activity.MainActivity
 import dev.kuylar.ownstream.tvleanback.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

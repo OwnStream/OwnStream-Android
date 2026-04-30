@@ -1,16 +1,12 @@
-package dev.kuylar.ownstream.tvleanback.view
+package dev.kuylar.ownstream.tvleanback.ui.view
 
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import dev.kuylar.ownstream.tvleanback.databinding.LayoutCardStandardBinding
-import kotlin.math.roundToInt
 
 open class MaterialCardView(
 	context: Context,

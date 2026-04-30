@@ -1,13 +1,7 @@
-package dev.kuylar.ownstream.tvleanback
-
-import java.util.Timer
+package dev.kuylar.ownstream.tvleanback.ui.fragment
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import androidx.leanback.app.BackgroundManager
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.HeaderItem
@@ -19,8 +13,6 @@ import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.Toast
 import androidx.core.view.postDelayed
 import androidx.leanback.widget.FocusHighlight
@@ -29,11 +21,14 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.ShelfItem
-import dev.kuylar.ownstream.tvleanback.presenter.CardPresenter
-import dev.kuylar.ownstream.tvleanback.presenter.ActionItemPresenter
-import dev.kuylar.ownstream.tvleanback.view.MaterialCardView
+import dev.kuylar.ownstream.tvleanback.ui.activity.DetailsActivity
+import dev.kuylar.ownstream.tvleanback.ui.activity.MainActivity
+import dev.kuylar.ownstream.tvleanback.ui.activity.PlaybackActivity
+import dev.kuylar.ownstream.tvleanback.R
+import dev.kuylar.ownstream.tvleanback.ui.presenter.CardPresenter
+import dev.kuylar.ownstream.tvleanback.ui.presenter.ActionItemPresenter
+import dev.kuylar.ownstream.tvleanback.ui.view.MaterialCardView
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -134,7 +129,7 @@ class MainFragment : BrowseSupportFragment() {
 							intent
 						} else {
 							val intent = Intent(requireActivity(), DetailsActivity::class.java)
-							intent.putExtra(DetailsActivity.MOVIE, item.id)
+							intent.putExtra(DetailsActivity.Companion.MOVIE, item.id)
 							intent
 						}
 						startActivity(intent)
@@ -142,12 +137,12 @@ class MainFragment : BrowseSupportFragment() {
 
 					else -> {
 						val intent = Intent(requireActivity(), DetailsActivity::class.java)
-						intent.putExtra(DetailsActivity.MOVIE, item.id)
+						intent.putExtra(DetailsActivity.Companion.MOVIE, item.id)
 
 						val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
 							requireActivity(),
 							(itemViewHolder.view as MaterialCardView).mainImageView!!,
-							DetailsActivity.SHARED_ELEMENT_NAME
+							DetailsActivity.Companion.SHARED_ELEMENT_NAME
 						).toBundle()
 						startActivity(intent, bundle)
 					}

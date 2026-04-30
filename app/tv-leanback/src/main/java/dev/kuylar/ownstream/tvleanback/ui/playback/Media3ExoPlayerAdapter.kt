@@ -1,4 +1,4 @@
-package dev.kuylar.ownstream.tvleanback
+package dev.kuylar.ownstream.tvleanback.ui.playback
 
 import android.content.Context
 import android.net.Uri
