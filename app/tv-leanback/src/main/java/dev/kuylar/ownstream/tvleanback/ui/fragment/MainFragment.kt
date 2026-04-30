@@ -51,11 +51,8 @@ class MainFragment : BrowseSupportFragment() {
 	private fun setupUIElements() {
 		title = "OwnStream"
 		// over title
-		headersState = HEADERS_HIDDEN
-		isHeadersTransitionOnBackEnabled = true
-
-		// set fastLane (or headers) background color
-		brandColor = ContextCompat.getColor(requireActivity(), R.color.fastlane_background)
+		headersState = HEADERS_DISABLED
+		isHeadersTransitionOnBackEnabled = false
 		// set search icon color
 		searchAffordanceColor = ContextCompat.getColor(requireActivity(), R.color.search_opaque)
 	}
