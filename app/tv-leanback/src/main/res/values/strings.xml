@@ -35,4 +35,7 @@
 	<string name="episode_title_template">%d - %s</string>
 	<string name="episode_content_template">%s</string>
 	<string name="video_episode_template">S%d E%d - %s</string>
+	<string name="subtitle_selector_title">Subtitles</string>
+	<string name="subtitle_selector_unlabeled">Subtitle %d</string>
+	<string name="subtitle_track_off">Off</string>
 </resources>

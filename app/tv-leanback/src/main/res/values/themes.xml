@@ -8,4 +8,14 @@
 		<item name="cornerFamily">rounded</item>
 		<item name="cornerSize">48dp</item>
 	</style>
+	<style name="Theme.OwnStream.SubtitleSelectorDialog" parent="@style/Theme.AppCompat.Dialog">
+		<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:windowAnimationStyle">
+			@style/Animation.OwnStream.SubtitleSelectorDialog
+		</item>
+	</style>
+	<style name="Animation.OwnStream.SubtitleSelectorDialog" parent="@android:style/Animation.Dialog">
+		<item name="android:windowEnterAnimation">@anim/subtitle_selector_enter</item>
+		<item name="android:windowExitAnimation">@anim/subtitle_selector_exit</item>
+	</style>
 </resources>

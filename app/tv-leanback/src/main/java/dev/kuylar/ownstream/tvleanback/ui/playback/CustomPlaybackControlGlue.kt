@@ -9,7 +9,8 @@ import androidx.leanback.widget.PlaybackControlsRow
 class CustomPlaybackControlGlue(
 	context: Context,
 	seekSpeeds: IntArray,
-	private val player: Media3ExoPlayerAdapter
+	private val player: Media3ExoPlayerAdapter,
+	private val onCaptionsActionClicked: () -> Unit
 ) : PlaybackBannerControlGlue<Media3ExoPlayerAdapter>(context, seekSpeeds, player) {
 	private val fastForwardAction = PlaybackControlsRow.FastForwardAction(context, 1)
 	private val rewindAction = PlaybackControlsRow.RewindAction(context, 1)
@@ -39,7 +40,7 @@ class CustomPlaybackControlGlue(
 			}
 
 			captionsAction -> {
-
+				onCaptionsActionClicked()
 			}
 
 			resolutionAction -> {
