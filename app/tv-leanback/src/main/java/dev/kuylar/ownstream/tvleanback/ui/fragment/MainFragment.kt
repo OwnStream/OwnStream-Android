@@ -29,6 +29,7 @@ import dev.kuylar.ownstream.tvleanback.ui.presenter.CardPresenter
 import dev.kuylar.ownstream.tvleanback.ui.presenter.ActionItemPresenter
 import dev.kuylar.ownstream.tvleanback.ui.view.MaterialCardView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -45,7 +46,6 @@ class MainFragment : BrowseSupportFragment() {
 
 		setupUIElements()
 		loadRows()
-		setupEventListeners()
 	}
 
 	private fun setupUIElements() {
@@ -55,6 +55,7 @@ class MainFragment : BrowseSupportFragment() {
 		isHeadersTransitionOnBackEnabled = false
 		// set search icon color
 		searchAffordanceColor = ContextCompat.getColor(requireActivity(), R.color.search_opaque)
+		onItemViewClickedListener = ItemViewClickedListener()
 	}
 
 	private fun loadRows() {
@@ -96,6 +97,9 @@ class MainFragment : BrowseSupportFragment() {
 			rowsAdapter.notifyItemRangeChanged(0, shelves.size + 1)
 			view?.postDelayed(50) {
 				setSelectedPosition(0, true)
+				view?.postDelayed(500) {
+					setupEventListeners()
+				}
 			}
 		}
 	}
@@ -105,8 +109,6 @@ class MainFragment : BrowseSupportFragment() {
 			Toast.makeText(requireActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
 				.show()
 		}
-
-		onItemViewClickedListener = ItemViewClickedListener()
 	}
 
 	private inner class ItemViewClickedListener : OnItemViewClickedListener {
