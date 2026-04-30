@@ -31,6 +31,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.postDelayed
+import androidx.leanback.widget.FocusHighlight
 import androidx.lifecycle.lifecycleScope
 
 import com.bumptech.glide.Glide
@@ -40,6 +41,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Shelf
 import dev.kuylar.ownstream.api.models.ShelfItem
+import dev.kuylar.ownstream.tvleanback.view.MaterialCardView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -87,7 +89,7 @@ class MainFragment : BrowseSupportFragment() {
 	private fun setupUIElements() {
 		title = "OwnStream"
 		// over title
-		headersState = BrowseSupportFragment.HEADERS_ENABLED
+		headersState = HEADERS_HIDDEN
 		isHeadersTransitionOnBackEnabled = true
 
 		// set fastLane (or headers) background color
@@ -97,7 +99,11 @@ class MainFragment : BrowseSupportFragment() {
 	}
 
 	private fun loadRows() {
-		val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
+		val presenter = ListRowPresenter(FocusHighlight.ZOOM_FACTOR_MEDIUM, false).apply {
+			selectEffectEnabled = false
+			shadowEnabled = false
+		}
+		val rowsAdapter = ArrayObjectAdapter(presenter)
 		val cardPresenter = CardPresenter()
 
 		val gridHeader = HeaderItem(-1L, "PREFERENCES")
@@ -174,7 +180,7 @@ class MainFragment : BrowseSupportFragment() {
 
 						val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
 							requireActivity(),
-							(itemViewHolder.view as ImageCardView).mainImageView!!,
+							(itemViewHolder.view as MaterialCardView).mainImageView!!,
 							DetailsActivity.SHARED_ELEMENT_NAME
 						).toBundle()
 						startActivity(intent, bundle)

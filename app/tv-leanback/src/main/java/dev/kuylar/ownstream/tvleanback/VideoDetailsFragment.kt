@@ -26,6 +26,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import androidx.leanback.widget.FocusHighlight
 import androidx.lifecycle.lifecycleScope
 
 import com.bumptech.glide.Glide
@@ -36,6 +37,7 @@ import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Content
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.api.models.Season
+import dev.kuylar.ownstream.tvleanback.view.MaterialCardView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -203,6 +205,10 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 	}
 
 	private fun setupSeasonRows(id: String, seasons: List<Season>) {
+		val presenter = ListRowPresenter(FocusHighlight.ZOOM_FACTOR_MEDIUM, false).apply {
+			selectEffectEnabled = false
+			shadowEnabled = false
+		}
 		lifecycleScope.launch {
 			val allSeasons = withContext(Dispatchers.IO) {
 				seasons.map { s ->
@@ -221,7 +227,7 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 
 				val header = HeaderItem(0, getString(R.string.season_title_template, season.index))
 				mAdapter.add(ListRow(header, listRowAdapter))
-				mPresenterSelector.addClassPresenter(ListRow::class.java, ListRowPresenter())
+				mPresenterSelector.addClassPresenter(ListRow::class.java, presenter)
 			}
 		}
 	}
@@ -246,7 +252,7 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 
 					val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
 						requireActivity(),
-						(itemViewHolder.view as ImageCardView).mainImageView!!,
+						(itemViewHolder.view as MaterialCardView).mainImageView,
 						DetailsActivity.SHARED_ELEMENT_NAME
 					).toBundle()
 					startActivity(intent, bundle)
@@ -264,12 +270,12 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 	}
 
 	companion object {
-		private val TAG = "VideoDetailsFragment"
+		private const val TAG = "VideoDetailsFragment"
 
-		private val ACTION_WATCH = 1L
-		private val ACTION_ERROR = 0L
+		private const val ACTION_WATCH = 1L
+		private const val ACTION_ERROR = 0L
 
-		private val DETAIL_THUMB_WIDTH = 274
-		private val DETAIL_THUMB_HEIGHT = 411
+		private const val DETAIL_THUMB_WIDTH = 274
+		private const val DETAIL_THUMB_HEIGHT = 411
 	}
 }
