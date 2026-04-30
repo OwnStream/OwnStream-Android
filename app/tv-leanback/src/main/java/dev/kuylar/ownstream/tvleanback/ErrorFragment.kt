@@ -6,22 +6,14 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.ErrorSupportFragment
 
-/**
- * This class demonstrates how to extend [ErrorSupportFragment].
- */
 class ErrorFragment : ErrorSupportFragment() {
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		title = resources.getString(R.string.app_name)
 	}
 
 	internal fun setErrorContent(it: Throwable? = null) {
-		imageDrawable =
-			ContextCompat.getDrawable(
-				requireActivity(),
-				androidx.leanback.R.drawable.lb_ic_sad_cloud
-			)
+		imageDrawable = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_error)
 		message = resources.getString(R.string.error_fragment_message)
 		if (it != null) {
 			message = message.toString() + "\n" + it.message

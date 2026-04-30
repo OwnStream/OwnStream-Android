@@ -43,39 +43,14 @@ class MainFragment : BrowseSupportFragment() {
 	@Inject
 	lateinit var client: OwnStreamApiClient
 
-	private val mHandler = Handler(Looper.myLooper()!!)
-	private lateinit var mBackgroundManager: BackgroundManager
-	private var mDefaultBackground: Drawable? = null
-	private lateinit var mMetrics: DisplayMetrics
-	private var mBackgroundTimer: Timer? = null
-	private var mBackgroundUri: String? = null
-	private var backgroundJob: Job? = null
-
 	@Deprecated("Deprecated in Java")
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
-		Log.i(TAG, "onCreate")
 		@Suppress("DEPRECATION")
 		super.onActivityCreated(savedInstanceState)
 
-		prepareBackgroundManager()
 		setupUIElements()
 		loadRows()
 		setupEventListeners()
-	}
-
-	override fun onDestroy() {
-		super.onDestroy()
-		Log.d(TAG, "onDestroy: " + mBackgroundTimer?.toString())
-		mBackgroundTimer?.cancel()
-	}
-
-	private fun prepareBackgroundManager() {
-		mBackgroundManager = BackgroundManager.getInstance(activity)
-		mBackgroundManager.attach(requireActivity().window)
-		mDefaultBackground =
-			ContextCompat.getDrawable(requireActivity(), R.drawable.default_background)
-		mMetrics = DisplayMetrics()
-		requireActivity().windowManager.defaultDisplay.getMetrics(mMetrics)
 	}
 
 	private fun setupUIElements() {
@@ -140,36 +115,6 @@ class MainFragment : BrowseSupportFragment() {
 		}
 
 		onItemViewClickedListener = ItemViewClickedListener()
-		/*
-		// Changes background images. Uncomment for when we can use this (if we ever can)
-		onItemViewSelectedListener =
-			OnItemViewSelectedListener { _, item, _, _ ->
-				if (item is ShelfItem) {
-					mBackgroundUri = item.backgroundImageUrl
-					backgroundJob?.cancel()
-					backgroundJob = lifecycleScope.launch {
-						delay(BACKGROUND_UPDATE_DELAY)
-						val width = mMetrics.widthPixels
-						val height = mMetrics.heightPixels
-						Glide
-							.with(requireActivity())
-							.load(mBackgroundUri)
-							.centerCrop()
-							.error(mDefaultBackground)
-							.into<CustomTarget<Drawable>>(object :
-								CustomTarget<Drawable>(width, height) {
-								override fun onResourceReady(
-									drawable: Drawable, transition: Transition<in Drawable>?
-								) {
-									mBackgroundManager.drawable = drawable
-								}
-
-								override fun onLoadCleared(p0: Drawable?) {}
-							})
-					}
-				}
-			}
-		 */
 	}
 
 	private inner class ItemViewClickedListener : OnItemViewClickedListener {
@@ -216,10 +161,5 @@ class MainFragment : BrowseSupportFragment() {
 				}
 			}
 		}
-	}
-
-	companion object {
-		private const val TAG = "MainFragment"
-		private const val BACKGROUND_UPDATE_DELAY = 300L
 	}
 }
