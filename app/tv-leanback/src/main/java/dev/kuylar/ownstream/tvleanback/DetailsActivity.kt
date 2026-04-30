@@ -1,6 +1,7 @@
 package dev.kuylar.ownstream.tvleanback
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ class DetailsActivity : FragmentActivity() {
 	}
 
 	fun onError(it: Throwable) {
+		Log.e("DetailsActivity", "onError triggered!", it)
 		supportFragmentManager
 			.beginTransaction()
 			.add(R.id.main_browse_fragment, mErrorFragment)

@@ -3,6 +3,7 @@ package dev.kuylar.ownstream.tvleanback
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +38,7 @@ class MainActivity : FragmentActivity() {
 	}
 
 	fun onError(it: Throwable) {
+		Log.e("MainActivity", "onError triggered!", it)
 		supportFragmentManager
 			.beginTransaction()
 			.add(R.id.main_browse_fragment, mErrorFragment)
