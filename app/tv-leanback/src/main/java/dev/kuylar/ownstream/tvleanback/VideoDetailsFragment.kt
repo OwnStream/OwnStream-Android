@@ -37,6 +37,7 @@ import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Content
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.api.models.Season
+import dev.kuylar.ownstream.tvleanback.presenter.CardPresenter
 import dev.kuylar.ownstream.tvleanback.view.MaterialCardView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

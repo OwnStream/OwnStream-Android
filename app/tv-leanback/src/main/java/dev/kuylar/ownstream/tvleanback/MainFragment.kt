@@ -1,11 +1,8 @@
 package dev.kuylar.ownstream.tvleanback
 
-import java.util.Collections
 import java.util.Timer
-import java.util.TimerTask
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -14,11 +11,9 @@ import androidx.leanback.app.BackgroundManager
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.HeaderItem
-import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.OnItemViewClickedListener
-import androidx.leanback.widget.OnItemViewSelectedListener
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
@@ -26,23 +21,19 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.postDelayed
 import androidx.leanback.widget.FocusHighlight
 import androidx.lifecycle.lifecycleScope
 
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
-import dev.kuylar.ownstream.api.models.Shelf
 import dev.kuylar.ownstream.api.models.ShelfItem
+import dev.kuylar.ownstream.tvleanback.presenter.CardPresenter
+import dev.kuylar.ownstream.tvleanback.presenter.ActionItemPresenter
 import dev.kuylar.ownstream.tvleanback.view.MaterialCardView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -58,6 +49,7 @@ class MainFragment : BrowseSupportFragment() {
 	private lateinit var mMetrics: DisplayMetrics
 	private var mBackgroundTimer: Timer? = null
 	private var mBackgroundUri: String? = null
+	private var backgroundJob: Job? = null
 
 	@Deprecated("Deprecated in Java")
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -108,11 +100,11 @@ class MainFragment : BrowseSupportFragment() {
 
 		val gridHeader = HeaderItem(-1L, "PREFERENCES")
 
-		val mGridPresenter = GridItemPresenter()
+		val mGridPresenter = ActionItemPresenter()
 		val gridRowAdapter = ArrayObjectAdapter(mGridPresenter)
-		gridRowAdapter.add(resources.getString(R.string.grid_view))
-		gridRowAdapter.add(getString(R.string.error_fragment))
-		gridRowAdapter.add(resources.getString(R.string.personal_settings))
+		gridRowAdapter.add(Pair(getString(R.string.grid_view), R.drawable.ic_error))
+		gridRowAdapter.add(Pair(getString(R.string.error_fragment), R.drawable.ic_error))
+		gridRowAdapter.add(Pair(getString(R.string.personal_settings), R.drawable.ic_error))
 		rowsAdapter.add(ListRow(gridHeader, gridRowAdapter))
 
 		adapter = rowsAdapter
@@ -148,7 +140,36 @@ class MainFragment : BrowseSupportFragment() {
 		}
 
 		onItemViewClickedListener = ItemViewClickedListener()
-		onItemViewSelectedListener = ItemViewSelectedListener()
+		/*
+		// Changes background images. Uncomment for when we can use this (if we ever can)
+		onItemViewSelectedListener =
+			OnItemViewSelectedListener { _, item, _, _ ->
+				if (item is ShelfItem) {
+					mBackgroundUri = item.backgroundImageUrl
+					backgroundJob?.cancel()
+					backgroundJob = lifecycleScope.launch {
+						delay(BACKGROUND_UPDATE_DELAY)
+						val width = mMetrics.widthPixels
+						val height = mMetrics.heightPixels
+						Glide
+							.with(requireActivity())
+							.load(mBackgroundUri)
+							.centerCrop()
+							.error(mDefaultBackground)
+							.into<CustomTarget<Drawable>>(object :
+								CustomTarget<Drawable>(width, height) {
+								override fun onResourceReady(
+									drawable: Drawable, transition: Transition<in Drawable>?
+								) {
+									mBackgroundManager.drawable = drawable
+								}
+
+								override fun onLoadCleared(p0: Drawable?) {}
+							})
+					}
+				}
+			}
+		 */
 	}
 
 	private inner class ItemViewClickedListener : OnItemViewClickedListener {
@@ -186,88 +207,19 @@ class MainFragment : BrowseSupportFragment() {
 						startActivity(intent, bundle)
 					}
 				}
-			} else if (item is String) {
-				if (item.contains(getString(R.string.error_fragment))) {
+			} else if (item is Pair<*, *> && item.first is String) {
+				if ((item.first as String).contains(getString(R.string.error_fragment))) {
 					(activity as? MainActivity)?.onError(Exception("Test exception"))
 				} else {
-					Toast.makeText(requireActivity(), item, Toast.LENGTH_SHORT).show()
+					Toast.makeText(requireActivity(), (item.first as String), Toast.LENGTH_SHORT)
+						.show()
 				}
 			}
 		}
 	}
 
-	private inner class ItemViewSelectedListener : OnItemViewSelectedListener {
-		override fun onItemSelected(
-			itemViewHolder: Presenter.ViewHolder?, item: Any?,
-			rowViewHolder: RowPresenter.ViewHolder, row: Row
-		) {
-			if (item is Movie) {
-				mBackgroundUri = item.backgroundImageUrl
-				startBackgroundTimer()
-			}
-		}
-	}
-
-	private fun updateBackground(uri: String?) {
-		val width = mMetrics.widthPixels
-		val height = mMetrics.heightPixels
-		Glide.with(requireActivity())
-			.load(uri)
-			.centerCrop()
-			.error(mDefaultBackground)
-			.into<SimpleTarget<Drawable>>(
-				object : SimpleTarget<Drawable>(width, height) {
-					override fun onResourceReady(
-						drawable: Drawable,
-						transition: Transition<in Drawable>?
-					) {
-						mBackgroundManager.drawable = drawable
-					}
-				})
-		mBackgroundTimer?.cancel()
-	}
-
-	private fun startBackgroundTimer() {
-		mBackgroundTimer?.cancel()
-		mBackgroundTimer = Timer()
-		mBackgroundTimer?.schedule(UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY.toLong())
-	}
-
-	private inner class UpdateBackgroundTask : TimerTask() {
-		override fun run() {
-			mHandler.post { updateBackground(mBackgroundUri) }
-		}
-	}
-
-	private inner class GridItemPresenter : Presenter() {
-		override fun onCreateViewHolder(parent: ViewGroup): Presenter.ViewHolder {
-			val view = TextView(parent.context)
-			view.layoutParams = ViewGroup.LayoutParams(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
-			view.isFocusable = true
-			view.isFocusableInTouchMode = true
-			view.setBackgroundColor(
-				ContextCompat.getColor(
-					requireActivity(),
-					R.color.default_background
-				)
-			)
-			view.setTextColor(Color.WHITE)
-			view.gravity = Gravity.CENTER
-			return Presenter.ViewHolder(view)
-		}
-
-		override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-			(viewHolder.view as TextView).text = item as String
-		}
-
-		override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {}
-	}
-
 	companion object {
-		private val TAG = "MainFragment"
-
-		private val BACKGROUND_UPDATE_DELAY = 300
-		private val GRID_ITEM_WIDTH = 200
-		private val GRID_ITEM_HEIGHT = 200
+		private const val TAG = "MainFragment"
+		private const val BACKGROUND_UPDATE_DELAY = 300L
 	}
 }

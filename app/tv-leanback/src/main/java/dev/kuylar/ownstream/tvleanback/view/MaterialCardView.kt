@@ -48,65 +48,6 @@ open class MaterialCardView(
 		setOnFocusChangeListener { _, hasFocus ->
 			setSelectedEffect(hasFocus)
 		}
-
-		/*
-		binding.image.setOnKeyListener { v, keyCode, event ->
-			if (keyCode == KeyEvent.KEYCODE_ENTER ||
-				keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER ||
-				keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-			) {
-				when (event.action) {
-					KeyEvent.ACTION_DOWN -> {
-						animateImageScale(0.95f)
-					}
-
-					KeyEvent.ACTION_UP -> {
-						if (v.isFocused || v.hasFocus())
-							animateImageScale(1.1f)
-						else
-							animateImageScale(1.0f)
-					}
-				}
-			}
-			false
-		}
-
-		binding.image.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-			if (right - left != oldRight - oldLeft || bottom - top != oldBottom - oldTop) {
-				val width = right - left
-				val height = bottom - top
-
-				val marginX = (0.05 * width).toInt()
-				val marginY = (0.05 * height).toInt()
-
-				val lp = v.layoutParams
-				if (lp is MarginLayoutParams) {
-					lp.setMargins(
-						marginX,
-						marginY,
-						marginX,
-						marginY
-					)
-					v.post {
-						v.setLayoutParams(lp)
-					}
-				}
-			}
-		}
-		 */
-	}
-
-	private fun animateImageScale(scale: Float) {
-		return
-		// decided to use the default card zoom
-		// so i dont mess with margins & stuff
-		/*
-		binding.image.animate()
-			.scaleX(scale)
-			.scaleY(scale)
-			.setDuration(150)
-			.start()
-		 */
 	}
 
 	var titleText: CharSequence
@@ -152,7 +93,6 @@ open class MaterialCardView(
 
 	fun setSelectedEffect(enabled: Boolean) {
 		binding.image.isSelected = enabled
-		animateImageScale(if (enabled) 1.1f else 1.0f)
 		toggleMarquee(binding.contentTitle, enabled)
 		toggleMarquee(binding.contentSubtitle, enabled)
 	}
