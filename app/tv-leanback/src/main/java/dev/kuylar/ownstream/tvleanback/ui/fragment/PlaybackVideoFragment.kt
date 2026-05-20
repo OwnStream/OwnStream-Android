@@ -1,9 +1,11 @@
 package dev.kuylar.ownstream.tvleanback.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.leanback.app.VideoSupportFragment
@@ -17,6 +19,9 @@ import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.tvleanback.ui.playback.CustomPlaybackControlGlue
 import dev.kuylar.ownstream.tvleanback.ui.playback.Media3ExoPlayerAdapter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,7 +31,9 @@ import javax.inject.Inject
 class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFragment.Host {
 	@Inject
 	lateinit var client: OwnStreamApiClient
+	private lateinit var videoId: String
 	private lateinit var playerAdapter: Media3ExoPlayerAdapter
+	private var progressUpdateJob: Job? = null
 
 	private lateinit var mTransportControlGlue: CustomPlaybackControlGlue
 	private var subtitleView: SubtitleView? = null
@@ -56,8 +63,10 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		val videoId = activity?.intent?.getStringExtra("videoId")
-		if (videoId == null) {
+		activity?.intent?.getStringExtra("videoId")?.let {
+			videoId = it
+		}
+		if (!this::videoId.isInitialized) {
 			activity?.finish()
 			return
 		}
@@ -73,6 +82,33 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 			}
 		mTransportControlGlue.host = glueHost
 		mTransportControlGlue.playWhenPrepared()
+		startProgressSync()
+	}
+
+	private fun startProgressSync() {
+		progressUpdateJob?.cancel()
+		progressUpdateJob = lifecycleScope.launch {
+			while (isActive) {
+				delay(5_000)
+				sendProgressUpdate()
+			}
+		}
+	}
+
+	private fun sendProgressUpdate() {
+		val duration = playerAdapter.duration
+		val position = playerAdapter.currentPosition
+
+		if (duration <= 0 || position < 0) return
+
+		lifecycleScope.launch(Dispatchers.IO) {
+			try {
+				val finished = (position.toFloat() / duration.toFloat()) > .9
+				client.updateWatchProgress(videoId, duration.toInt(), position.toInt(), finished)
+			} catch (e: Exception) {
+				Log.w(this.javaClass.name, "Failed to update watch progress", e)
+			}
+		}
 	}
 
 	private fun loadVideo(videoId: String) {
@@ -100,9 +136,15 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 		}
 	}
 
+	override fun onDestroy() {
+		progressUpdateJob?.cancel()
+		super.onDestroy()
+	}
+
 	override fun onPause() {
 		super.onPause()
 		mTransportControlGlue.pause()
+		sendProgressUpdate()
 	}
 
 	override fun onDestroyView() {
@@ -129,6 +171,9 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 
 	private fun showSubtitleSelector() {
 		if (childFragmentManager.findFragmentByTag(SubtitleSelectorDialogFragment.TAG) != null) return
-		SubtitleSelectorDialogFragment().show(childFragmentManager, SubtitleSelectorDialogFragment.TAG)
+		SubtitleSelectorDialogFragment().show(
+			childFragmentManager,
+			SubtitleSelectorDialogFragment.TAG
+		)
 	}
 }

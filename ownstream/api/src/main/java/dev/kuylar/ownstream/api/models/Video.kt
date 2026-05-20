@@ -12,6 +12,7 @@ data class Video(
 	val language: String,
 	val previewFiles: List<PreviewFile>? = null,
 	val subtitles: List<SubtitleFile>? = null,
+	val attachments: List<String>? = null,
 	val episode: Episode? = null,
 	val content: Content? = null,
 	val segments: List<VideoSegment>? = null
