@@ -14,11 +14,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.R
-import dev.kuylar.ownstream.api.ApiResponse
 import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.api.models.Shelf
 import dev.kuylar.ownstream.databinding.FragmentHomeBinding
 import dev.kuylar.ownstream.ui.activity.LoginActivity
-import dev.kuylar.ownstream.ui.adapter.list.ShelfListAdapter
 import dev.kuylar.ownstream.ui.adapter.list.ShelvesListAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,28 +61,45 @@ class HomeFragment : Fragment() {
 
 	private suspend fun refresh() {
 		binding.srl.isRefreshing = true
-		val shelves = withContext(Dispatchers.IO) {
+		val authed = withContext(Dispatchers.IO) {
 			try {
-				client.getHomeShelves()
+				client.whoAmI().responseCode != 401
 			} catch (e: Exception) {
-				Log.e(this.javaClass.name, "Failed to load home shelves", e)
+				Toast.makeText(requireContext(), R.string.auth_error, Toast.LENGTH_LONG).show()
+				Log.e(this.javaClass.name, "Failed to load whoami", e)
 				null
 			}
 		}
-		binding.srl.isRefreshing = false
 
-		if (shelves?.responseCode == 401) {
+		if (authed == false) {
 			startActivity(Intent(requireContext(), LoginActivity::class.java))
 			activity?.finish()
-			return
 		}
 
-		if (shelves == null || shelves.response == null) {
-			Toast.makeText(requireContext(), R.string.home_error, Toast.LENGTH_LONG)
-				.show()
-			return
+		val shelves = withContext(Dispatchers.IO) {
+			listOfNotNull(
+				getShelf("nextUp", getString(R.string.shelf_nextup)),
+				getShelf("continue", getString(R.string.shelf_continue)),
+				getShelf("recent", getString(R.string.shelf_recents)),
+				getShelf("recentContent/movie", getString(R.string.shelf_movies)),
+				getShelf("recentContent/tv", getString(R.string.shelf_series)),
+			)
 		}
+		binding.srl.isRefreshing = false
 
-		adapter.submitList(shelves.response)
+		adapter.submitList(shelves)
+	}
+
+	private suspend fun getShelf(id: String, title: String): Shelf? {
+		try {
+			val items = client.getHomeShelf(id).response ?: emptyList();
+			if (items.isEmpty())
+				return null
+
+			return Shelf(title, id, null, null, items)
+		} catch (e: Exception) {
+			Log.e(this.javaClass.name, "Failed to load shelf: $id", e)
+			return null
+		}
 	}
 }
