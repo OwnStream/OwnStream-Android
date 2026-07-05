@@ -3,11 +3,11 @@ package dev.kuylar.ownstream.ui.activity
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
@@ -15,14 +15,18 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.Utils.firstOf
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.api.models.Video
-import dev.kuylar.ownstream.api.models.WatchProgressResponse
 import dev.kuylar.ownstream.databinding.ActivityPlayerBinding
+import io.github.peerless2012.ass.media.AssHandler
+import io.github.peerless2012.ass.media.kt.buildWithAssSupport
+import io.github.peerless2012.ass.media.type.AssRenderType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,6 +34,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @AndroidEntryPoint
 class PlayerActivity : AppCompatActivity() {
@@ -67,14 +72,18 @@ class PlayerActivity : AppCompatActivity() {
 		}
 
 		player = ExoPlayer.Builder(this)
-			.build()
+			.buildWithAssSupport(
+				this,
+				AssRenderType.OVERLAY_OPEN_GL,
+				subtitleView = binding.playerView.subtitleView
+			)
 		binding.playerView.player = player
 
 		lifecycleScope.launch {
 			val videoResp = withContext(Dispatchers.IO) {
 				client.getVideo(videoId).response
 			}
-			val episodeResp = withContext(Dispatchers.IO) {
+			val episodeResp = videoResp?.episode ?: withContext(Dispatchers.IO) {
 				client.getEpisode(episodeId).response
 			}
 			val progressResp = withContext(Dispatchers.IO) {
@@ -90,13 +99,13 @@ class PlayerActivity : AppCompatActivity() {
 			val mediaItem = MediaItem.Builder().apply {
 				setMediaId(videoId)
 				setCustomCacheKey(videoId)
-				setUri(client.getMediaUrl(videoId, "master.m3u8"))
+				setUri(client.getMediaUrl(videoId, null, "master.m3u8"))
 				video.subtitles?.let { subs ->
 					setSubtitleConfigurations(
 						subs
 							.mapNotNull {
-								val selected =
-									it.files.firstOf("srt", "vtt") ?: return@mapNotNull null
+								val selected = it.files.firstOf("ass", "ssa", "srt", "vtt")
+									?: return@mapNotNull null
 								it.copy(
 									files = mapOf("sub" to selected)
 								)
@@ -106,7 +115,8 @@ class PlayerActivity : AppCompatActivity() {
 									client.getMediaUrl(
 										videoId,
 										"captions",
-										it.files.values.first()
+										it.files.values.first(),
+										mapOf("includeFonts" to "true")
 									).toUri()
 								).apply {
 									this.setId(it.id.toString())
@@ -120,12 +130,13 @@ class PlayerActivity : AppCompatActivity() {
 										when (it.files.values.first().substringAfterLast('.')) {
 											"vtt" -> MimeTypes.TEXT_VTT
 											"srt" -> MimeTypes.APPLICATION_SUBRIP
+											"ass" -> MimeTypes.TEXT_SSA
+											"ssa" -> MimeTypes.TEXT_SSA
 											else -> MimeTypes.TEXT_UNKNOWN
 										}
 									this.setMimeType(mime)
 								}.build()
 							}
-
 					)
 				}
 			}.build()
@@ -142,7 +153,7 @@ class PlayerActivity : AppCompatActivity() {
 		progressUpdateJob?.cancel()
 		progressUpdateJob = lifecycleScope.launch {
 			while (isActive) {
-				delay(5_000)
+				delay(5.seconds)
 				sendProgressUpdate()
 			}
 		}

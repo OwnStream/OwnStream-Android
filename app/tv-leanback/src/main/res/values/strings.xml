@@ -12,7 +12,7 @@
 	<string name="dismiss_error">Dismiss</string>
 	<string name="title_activity_setup">SetupActivity</string>
 	<string name="setup_instance_title">Welcome to OwnStream</string>
-	<string name="setup_instance_description">Let\'s get started. Where does your OwnStream instance located at?</string>
+	<string name="setup_instance_description">Let\'s get started. Where is your OwnStream instance located at?</string>
 	<string name="setup_instance_breadcrumb">Setup: Step 1</string>
 	<string name="setup_instance_continue">Continue</string>
 	<string name="setup_instance_uri">Instance URL</string>
@@ -24,7 +24,13 @@
 	<string name="setup_account_continue">Continue</string>
 	<string name="logging_in">Logging in, please wait…</string>
 	<string name="login_fail">Failed to log in: %s</string>
+
 	<string name="error_shelves">Failed to load shelves</string>
+	<string name="shelf_continue">Continue Watching</string>
+	<string name="shelf_nextup">Up Next</string>
+	<string name="shelf_recents">Recently Added</string>
+	<string name="shelf_movies">Movies</string>
+	<string name="shelf_series">TV Shows</string>
 
 	<string name="watch">Watch</string>
 	<string name="watch_continue">Continue watching</string>

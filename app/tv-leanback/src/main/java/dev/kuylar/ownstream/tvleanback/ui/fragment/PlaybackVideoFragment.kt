@@ -55,6 +55,7 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 		)
 		root.addView(subtitleOverlay, params)
 		subtitleView = subtitleOverlay
+		playerAdapter.initPlayer(subtitleView)
 		playerAdapter.setSubtitleCueListener { cues ->
 			subtitleView?.setCues(cues)
 		}

@@ -20,9 +20,12 @@ import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.SubtitleView
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Video
 import dev.kuylar.ownstream.tvleanback.R
+import io.github.peerless2012.ass.media.kt.buildWithAssSupport
+import io.github.peerless2012.ass.media.type.AssRenderType
 import java.util.Locale
 import kotlin.math.max
 
@@ -37,7 +40,7 @@ class Media3ExoPlayerAdapter(
 		val isSelected: Boolean
 	)
 
-	private val player = ExoPlayer.Builder(context).build()
+	private lateinit var player: ExoPlayer
 	private val mainHandler = Handler(Looper.getMainLooper())
 	private var isUpdatingProgress = false
 	private var subtitleCueListener: ((List<Cue>) -> Unit)? = null
@@ -101,7 +104,13 @@ class Media3ExoPlayerAdapter(
 		}
 	}
 
-	init {
+	@OptIn(UnstableApi::class)
+	fun initPlayer(subtitleView: SubtitleView?) {
+		player = ExoPlayer.Builder(context).buildWithAssSupport(
+			context,
+			AssRenderType.OVERLAY_OPEN_GL,
+			subtitleView = subtitleView
+		)
 		player.addListener(playerListener)
 	}
 
@@ -110,14 +119,13 @@ class Media3ExoPlayerAdapter(
 		val mediaItem = MediaItem.Builder().apply {
 			setMediaId(video.id)
 			setCustomCacheKey(video.id)
-			setUri(client.getMediaUrl(video.id, "master.m3u8"))
+			setUri(client.getMediaUrl(video.id, null, "master.m3u8"))
 			video.subtitles?.let { subs ->
 				setSubtitleConfigurations(
 					subs
 						.mapNotNull {
-							val selected =
-								it.files.firstOf("ass", "sup", "srt", "vtt")
-									?: return@mapNotNull null
+							val selected = it.files.firstOf("ass", "ssa", "srt", "vtt")
+								?: return@mapNotNull null
 							it.copy(
 								files = mapOf("sub" to selected)
 							)
@@ -127,7 +135,8 @@ class Media3ExoPlayerAdapter(
 								client.getMediaUrl(
 									video.id,
 									"captions",
-									it.files.values.first()
+									it.files.values.first(),
+									mapOf("includeFonts" to "true")
 								).toUri()
 							).apply {
 								this.setId(it.id.toString())
@@ -141,12 +150,13 @@ class Media3ExoPlayerAdapter(
 									when (it.files.values.first().substringAfterLast('.')) {
 										"vtt" -> MimeTypes.TEXT_VTT
 										"srt" -> MimeTypes.APPLICATION_SUBRIP
+										"ass" -> MimeTypes.TEXT_SSA
+										"ssa" -> MimeTypes.TEXT_SSA
 										else -> MimeTypes.TEXT_UNKNOWN
 									}
 								this.setMimeType(mime)
 							}.build()
 						}
-
 				)
 			}
 		}.build()
@@ -155,43 +165,52 @@ class Media3ExoPlayerAdapter(
 	}
 
 	override fun isPrepared(): Boolean {
-		return player.playbackState != Player.STATE_IDLE
+		return this::player.isInitialized && player.playbackState != Player.STATE_IDLE
 	}
 
 	override fun play() {
+		if (!this::player.isInitialized) return
 		player.playWhenReady = true
 		player.play()
 	}
 
 	override fun pause() {
+		if (!this::player.isInitialized) return
 		player.pause()
 	}
 
 	override fun fastForward() {
+		if (!this::player.isInitialized) return
 		player.seekForward()
 	}
 
 	override fun rewind() {
+		if (!this::player.isInitialized) return
 		player.seekBack()
 	}
 
 	override fun seekTo(positionInMs: Long) {
+		if (!this::player.isInitialized) return
 		player.seekTo(positionInMs)
 	}
 
 	override fun isPlaying(): Boolean {
+		if (!this::player.isInitialized) return false
 		return player.isPlaying
 	}
 
 	override fun getDuration(): Long {
+		if (!this::player.isInitialized) return -1L
 		return player.duration.takeIf { it != C.TIME_UNSET } ?: -1L
 	}
 
 	override fun getCurrentPosition(): Long {
+		if (!this::player.isInitialized) return -1L
 		return player.currentPosition
 	}
 
 	override fun getBufferedPosition(): Long {
+		if (!this::player.isInitialized) return -1L
 		return player.bufferedPosition
 	}
 
@@ -212,9 +231,11 @@ class Media3ExoPlayerAdapter(
 
 	override fun onDetachedFromHost() {
 		setProgressUpdatingEnabled(false)
-		player.clearVideoSurface()
-		player.removeListener(playerListener)
-		player.release()
+		if (this::player.isInitialized) {
+			player.clearVideoSurface()
+			player.removeListener(playerListener)
+			player.release()
+		}
 		super.onDetachedFromHost()
 	}
 

@@ -84,7 +84,9 @@ class SetupFragmentAccountLogin : GuidedStepSupportFragment() {
 						}
 						return@runCatching res
 					}.onFailure {
-						Toast.makeText(requireContext(), getString(R.string.login_fail, it.message), Toast.LENGTH_LONG).show()
+						withContext(Dispatchers.Main) {
+							Toast.makeText(requireContext(), getString(R.string.login_fail, it.message), Toast.LENGTH_LONG).show()
+						}
 					}.onSuccess {
 						finishGuidedStepSupportFragments()
 						startActivity(Intent(requireContext(), MainActivity::class.java))

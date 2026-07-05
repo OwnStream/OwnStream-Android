@@ -2,6 +2,7 @@ package dev.kuylar.ownstream.tvleanback.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.HeaderItem
@@ -20,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.api.models.Shelf
 import dev.kuylar.ownstream.api.models.ShelfItem
 import dev.kuylar.ownstream.tvleanback.ui.activity.DetailsActivity
 import dev.kuylar.ownstream.tvleanback.ui.activity.MainActivity
@@ -80,7 +82,13 @@ class MainFragment : BrowseSupportFragment() {
 		lifecycleScope.launch {
 			val shelves = runCatching {
 				withContext(Dispatchers.IO) {
-					client.getHomeShelves().response!!
+					listOfNotNull(
+						getShelf("nextUp", getString(R.string.shelf_nextup)),
+						getShelf("continue", getString(R.string.shelf_continue)),
+						getShelf("recent", getString(R.string.shelf_recents)),
+						getShelf("recentContent/movie", getString(R.string.shelf_movies)),
+						getShelf("recentContent/tv", getString(R.string.shelf_series)),
+					)
 				}
 			}.onFailure {
 				(activity as? MainActivity)?.onError(it)
@@ -154,6 +162,19 @@ class MainFragment : BrowseSupportFragment() {
 						.show()
 				}
 			}
+		}
+	}
+
+	private suspend fun getShelf(id: String, title: String): Shelf? {
+		try {
+			val items = client.getHomeShelf(id).response ?: emptyList();
+			if (items.isEmpty())
+				return null
+
+			return Shelf(title, id, null, null, items)
+		} catch (e: Exception) {
+			Log.e(this.javaClass.name, "Failed to load shelf: $id", e)
+			return null
 		}
 	}
 }

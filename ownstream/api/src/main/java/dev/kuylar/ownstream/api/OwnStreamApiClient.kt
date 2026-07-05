@@ -1,5 +1,6 @@
 package dev.kuylar.ownstream.api
 
+import android.os.Build
 import android.util.Log
 import dev.kuylar.ownstream.api.models.*
 import io.ktor.client.HttpClient
@@ -12,7 +13,9 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.charsets.Charset
 import kotlinx.serialization.json.JsonObject
+import java.net.URLEncoder
 
 class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 	private var token: String? = null
@@ -245,9 +248,27 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 	// TODO: /api/settings/benchmark
 
 
-	fun getMediaUrl(videoId: String, file: String) =
-		"${instanceHost.trimEnd('/')}/Media/$videoId/$file"
+	fun getMediaUrl(
+		videoId: String,
+		dir: String?,
+		file: String,
+		query: Map<String, String>? = null
+	): String {
+		var url = "${instanceHost.trimEnd('/')}/Media/$videoId/"
+		if (dir != null) url += "$dir/"
+		url += file
+		if (query?.isNotEmpty() == true) {
+			url += "?" + query.entries.joinToString("&") { "${ue(it.key)}=${ue(it.value)}" }
+		}
+		return url
+	}
 
-	fun getMediaUrl(videoId: String, dir: String, file: String) =
-		"${instanceHost.trimEnd('/')}/Media/$videoId/$dir/$file"
+	private fun ue(value: String): String {
+		return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			URLEncoder.encode(value, Charset.defaultCharset())
+		} else {
+			@Suppress("DEPRECATION")
+			URLEncoder.encode(value)
+		}
+	}
 }
