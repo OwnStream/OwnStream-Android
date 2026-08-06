@@ -117,6 +117,9 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 			val video = withContext(Dispatchers.IO) {
 				client.getVideo(videoId).response
 			}
+			val progressResp = withContext(Dispatchers.IO) {
+				client.getProgress(videoId).response
+			}
 
 			if (video == null) {
 				activity?.finish()
@@ -133,7 +136,7 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 					video.episode?.episodeNumber,
 					video.episode?.translatedTitle ?: video.episode?.originalTitle
 				) else null
-			playerAdapter.setDataSource(video, client)
+			playerAdapter.setDataSource(video, progressResp, client)
 		}
 	}
 

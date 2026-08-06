@@ -23,6 +23,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.SubtitleView
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Video
+import dev.kuylar.ownstream.api.models.WatchProgressResponse
 import dev.kuylar.ownstream.tvleanback.R
 import io.github.peerless2012.ass.media.kt.buildWithAssSupport
 import io.github.peerless2012.ass.media.type.AssRenderType
@@ -115,7 +116,7 @@ class Media3ExoPlayerAdapter(
 	}
 
 	@OptIn(UnstableApi::class)
-	fun setDataSource(video: Video, client: OwnStreamApiClient) {
+	fun setDataSource(video: Video, progressResp: WatchProgressResponse?, client: OwnStreamApiClient) {
 		val mediaItem = MediaItem.Builder().apply {
 			setMediaId(video.id)
 			setCustomCacheKey(video.id)
@@ -162,6 +163,7 @@ class Media3ExoPlayerAdapter(
 		}.build()
 		player.setMediaItem(mediaItem)
 		player.prepare()
+		progressResp?.position?.toLong()?.let { player.seekTo(it) }
 	}
 
 	override fun isPrepared(): Boolean {
