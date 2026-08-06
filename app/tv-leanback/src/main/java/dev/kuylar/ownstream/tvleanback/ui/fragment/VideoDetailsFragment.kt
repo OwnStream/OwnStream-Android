@@ -82,20 +82,20 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 				withContext(Dispatchers.IO) {
 					Triple(
 						client.getContentDetails(id).response!!,
-						client.getEpisodeToWatch(id).response!!,
-						client.getSeasons(id).response!!
+						client.getEpisodeToWatch(id).response,
+						client.getSeasons(id).response
 					)
 				}
 			}.onFailure {
 				(activity as? DetailsActivity)?.onError(it)
 			}.onSuccess {
 				val (content, upNext, seasons) = it
-				val isContinue = upNext.continueWatching != null
-				val episode = upNext.continueWatching ?: upNext.upNext
+				val isContinue = upNext?.continueWatching != null
+				val episode = upNext?.continueWatching ?: upNext?.upNext
 				val videoId = episode?.videos?.firstOrNull()?.id
 				setupDetailsOverviewRow(content, isContinue, episode, videoId)
 				setupDetailsOverviewRowPresenter(videoId)
-				if (content.type == "Tv") {
+				if (content.type == "Tv" && seasons != null) {
 					setupSeasonRows(content.id, seasons)
 				}
 				adapter = mAdapter

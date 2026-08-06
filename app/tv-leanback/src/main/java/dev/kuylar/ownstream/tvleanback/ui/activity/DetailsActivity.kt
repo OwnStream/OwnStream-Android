@@ -29,7 +29,7 @@ class DetailsActivity : FragmentActivity() {
 		Log.e("DetailsActivity", "onError triggered!", it)
 		supportFragmentManager
 			.beginTransaction()
-			.add(R.id.main_browse_fragment, mErrorFragment)
+			.add(R.id.details_fragment, mErrorFragment)
 			.commit()
 		lifecycleScope.launch {
 			delay(50)
