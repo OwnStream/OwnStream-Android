@@ -70,6 +70,12 @@ class MovieFragment : Fragment() {
 			Log.e(this.javaClass.name, "Failed to load movie", e)
 			null
 		}?.response
+		val episodeToWatch = try {
+			client.getEpisodeToWatch(id)
+		} catch (e: Exception) {
+			Log.w(this.javaClass.name, "Failed to load the episode to watch", e)
+			null
+		}?.response
 		binding.srl.isRefreshing = false
 
 		if (movie == null) {
@@ -105,33 +111,25 @@ class MovieFragment : Fragment() {
 		binding.originalTitle.visibleIfNotBlank()
 		binding.tagline.visibleIfNotBlank()
 
-		binding.buttonWatch.setOnClickListener {
-			lifecycleScope.launch {
-				binding.buttonWatch.isEnabled = false
-				val episodes = try {
-					client.getEpisodes(id, 1).response
-				} catch (e: Exception) {
-					Log.e(this.javaClass.name, "Failed to get episode ID", e)
-					null
+		val isContinue = episodeToWatch?.continueWatching != null
+		val episode = episodeToWatch?.continueWatching ?: episodeToWatch?.upNext
+		val videoId = episode?.videos?.firstOrNull()?.id
+		if (episode != null && videoId != null) {
+			binding.buttonWatch.text =
+				getString(if (isContinue) R.string.action_continue else R.string.action_watch)
+			binding.buttonWatch.setOnClickListener {
+				lifecycleScope.launch {
+					val intent = Intent(requireContext(), PlayerActivity::class.java)
+					intent.putExtra("episode", episode.id)
+					intent.putExtra("video", videoId)
+					startActivity(intent)
 				}
-				binding.buttonWatch.isEnabled = true
-
-				val episode = episodes?.firstOrNull()
-				val videoId = episode?.videos?.firstOrNull()?.id
-
-				if (videoId == null) {
-					Toast.makeText(
-						requireContext(),
-						R.string.error_video_not_found,
-						Toast.LENGTH_LONG
-					).show()
-				}
-
-				val intent = Intent(requireContext(), PlayerActivity::class.java)
-				intent.putExtra("episode", episode?.id)
-				intent.putExtra("video", videoId)
-				startActivity(intent)
 			}
+			binding.buttonWatch.isEnabled = true
+		} else if (episode != null) {
+			binding.buttonWatch.setText(R.string.error_video_not_found)
+		} else {
+			binding.buttonWatch.setText(R.string.login_error_null_response)
 		}
 	}
 }
