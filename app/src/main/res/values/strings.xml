@@ -32,4 +32,18 @@
 	<string name="template_episode_title">E%02d: %s</string>
 	<string name="template_season_title">Season %d</string>
 	<string name="progress_loading">Loading progress…</string>
+	<string name="player_skip_intro">Skip Intro</string>
+	<string name="player_skip_outro">Skip Ending</string>
+	<string name="player_skip_intermission">Skip Intermission</string>
+	<string name="video">Video</string>
+	<string name="player_episode_template">S%d E%d: %s</string>
+	<string name="player_quality">Quality</string>
+	<string name="bullet">•</string>
+	<string name="player_quality_auto">Auto</string>
+	<string name="player_captions">Subtitles</string>
+	<string name="player_track">Audio Track</string>
+	<string name="unavailable">Unavailable</string>
+	<string name="none">None</string>
+	<string name="subtitle_selector_unlabeled">Subtitle #%d</string>
+	<string name="subtitle_selector_template">%s • %s</string>
 </resources>

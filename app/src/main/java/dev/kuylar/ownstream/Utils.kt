@@ -4,8 +4,8 @@ import android.view.View
 import android.widget.TextView
 
 object Utils {
-	fun View.visibleIf(value: Boolean) {
-		this.visibility = if (value) View.VISIBLE else View.GONE
+	fun View.visibleIf(value: Boolean, orElse: Int = View.GONE) {
+		this.visibility = if (value) View.VISIBLE else orElse
 	}
 
 	fun TextView.visibleIfNotBlank() {

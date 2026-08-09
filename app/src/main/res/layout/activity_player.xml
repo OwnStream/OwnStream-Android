@@ -8,11 +8,57 @@
 	android:background="#000000"
 	tools:context=".ui.activity.PlayerActivity">
 
-	<androidx.media3.ui.PlayerView
+	<com.github.vkay94.dtpv.DoubleTapPlayerView
 		android:id="@+id/player_view"
 		android:layout_width="match_parent"
-		app:show_subtitle_button="true"
-		app:show_buffering="always"
-		android:layout_height="match_parent" />
+		android:layout_height="match_parent"
+		android:background="#000000"
+		app:animation_enabled="false"
+		app:controller_layout_id="@layout/exo_player_control_view" />
+
+	<com.github.vkay94.dtpv.youtube.YouTubeOverlay
+		android:id="@+id/player_overlay"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#77000000"
+		android:visibility="invisible"
+		app:yt_playerView="@id/player_view" />
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<com.google.android.material.progressindicator.CircularProgressIndicator
+			android:id="@+id/player_buffering_progress"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:indeterminate="true"
+			app:indicatorColor="#fff"
+			app:indicatorSize="56dp"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_skip"
+			style="?attr/materialButtonOutlinedStyle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="-24dp"
+			android:layout_marginBottom="80dp"
+			android:paddingRight="48dp"
+			android:text="@string/player_skip_intro"
+			android:textColor="#fff"
+			android:visibility="gone"
+			app:backgroundTint="#55000000"
+			app:icon="@drawable/ic_skip"
+			app:iconTint="#fff"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			tools:ignore="RtlHardcoded,RtlSymmetry"
+			tools:visibility="visible" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

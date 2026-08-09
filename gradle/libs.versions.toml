@@ -22,6 +22,8 @@ glide = "5.0.5"
 media3 = "1.10.0"
 libass = "0.5.0-beta01"
 leanback = "1.2.0"
+youtubetimebar = "0.2.3"
+doubletapplayerview = "1.0.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,12 @@ media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 libass = { group = "io.github.peerless2012", name = "ass-media", version.ref = "libass" }
 androidx-leanback = { group = "androidx.leanback", name = "leanback", version.ref = "leanback" }
+# https://github.com/vkay94/YouTubeTimeBar
+# Forked version to support androidx.media3
+youtubetimebar = { module = "com.github.kuylar:YouTubeTimeBar", version.ref = "youtubetimebar" }
+# https://github.com/vkay94/DoubleTapPlayerView
+# Forked version to support androidx.media3
+doubletapplayerview = { module = "com.github.kuylar:DoubleTapPlayerView", version.ref = "doubletapplayerview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

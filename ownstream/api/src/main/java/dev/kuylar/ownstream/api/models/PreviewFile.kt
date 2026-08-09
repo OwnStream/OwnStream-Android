@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PreviewFile (
 	val template: String,
-	val frameCount: Long,
-	val rows: Long,
-	val columns: Long,
-	val period: Long? = null,
+	val frameCount: Int,
+	val rows: Int,
+	val columns: Int,
+	val period: Float? = null,
 )

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".ui.fragment.PlayerCaptionSelectorFragment">
+
+	<LinearLayout
+		android:id="@+id/player_settings_main"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:id="@+id/player_settings_button_quality"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="?attr/selectableItemBackground"
+			android:gravity="center_vertical"
+			android:orientation="horizontal"
+			android:paddingHorizontal="22dp"
+			android:paddingVertical="10dp">
+
+			<ImageView
+				android:layout_width="32dp"
+				android:layout_height="32dp"
+				android:importantForAccessibility="no"
+				android:src="@drawable/ic_settings" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="24dp"
+				android:text="@string/player_quality"
+				android:textAppearance="?textAppearanceBodyMedium" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="8dp"
+				android:text="@string/bullet" />
+
+			<TextView
+				android:id="@+id/player_settings_quality_value"
+				style="?textAppearanceLabelMedium"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/player_quality_auto" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/player_settings_button_caption"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="?attr/selectableItemBackground"
+			android:gravity="center_vertical"
+			android:orientation="horizontal"
+			android:paddingHorizontal="22dp"
+			android:paddingVertical="10dp">
+
+			<ImageView
+				android:layout_width="32dp"
+				android:layout_height="32dp"
+				android:importantForAccessibility="no"
+				android:src="@drawable/ic_captions" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="24dp"
+				android:text="@string/player_captions"
+				android:textAppearance="?textAppearanceBodyMedium" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="8dp"
+				android:text="@string/bullet" />
+
+			<TextView
+				android:id="@+id/player_settings_caption_value"
+				style="?textAppearanceLabelMedium"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/unavailable" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/player_settings_button_audio"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="?attr/selectableItemBackground"
+			android:gravity="center_vertical"
+			android:orientation="horizontal"
+			android:paddingHorizontal="22dp"
+			android:paddingVertical="10dp">
+
+			<ImageView
+				android:layout_width="32dp"
+				android:layout_height="32dp"
+				android:importantForAccessibility="no"
+				android:src="@drawable/ic_audio" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="24dp"
+				android:text="@string/player_track"
+				android:textAppearance="?textAppearanceBodyMedium" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="8dp"
+				android:text="@string/bullet" />
+
+			<TextView
+				android:id="@+id/player_settings_audio_value"
+				style="?textAppearanceLabelMedium"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/unavailable" />
+		</LinearLayout>
+	</LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

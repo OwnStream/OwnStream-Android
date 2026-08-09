@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/player_controls"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:animateLayoutChanges="true"
+	android:background="#6000"
+	android:clipToPadding="false"
+	tools:background="#000">
+
+	<LinearLayout
+		android:id="@+id/player_top_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fitsSystemWindows="true">
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_back"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:backgroundTint="#0000"
+			app:icon="@drawable/ic_back"
+			app:iconTint="#fff" />
+
+		<LinearLayout
+			android:id="@+id/player_metadata"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/player_title"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textAppearance="?textAppearanceTitleMedium"
+				android:textColor="#fff"
+				android:textStyle="bold"
+				tools:text="Video Title" />
+
+			<TextView
+				android:id="@+id/player_subtitle"
+				style="?textAppearanceLabelMedium"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textColor="#AAFFFFFF"
+				tools:text="Video Subtitle" />
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/player_center_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:gravity="center_horizontal">
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_rew"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:backgroundTint="#5000"
+			app:icon="@drawable/ic_rew"
+			app:iconSize="24dp"
+			app:iconTint="#fff" />
+
+		<!-- exoplayer doesnt support MaterialButton :( -->
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_play_pause"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="48dp"
+			app:backgroundTint="#5000"
+			app:icon="@drawable/ic_play"
+			app:iconSize="40dp"
+			app:iconTint="#fff" />
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_ffwd"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:backgroundTint="#5000"
+			app:icon="@drawable/ic_ffw"
+			app:iconSize="24dp"
+			app:iconTint="#fff" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/player_bottom_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:fitsSystemWindows="true"
+		android:paddingHorizontal="10dp">
+
+		<TextView
+			android:id="@id/exo_position"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="#fff"
+			tools:text="--:--" />
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="8dp"
+			android:text="/"
+			android:textColor="#bbb"
+			tools:ignore="HardcodedText" />
+
+		<TextView
+			android:id="@id/exo_duration"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="#bbb"
+			tools:text="--:--" />
+
+		<Space
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1" />
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_captions"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:visibility="gone"
+			app:backgroundTint="#0000"
+			app:icon="@drawable/ic_captions"
+			app:iconTint="#fff"
+			tools:visibility="visible" />
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_audio"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:visibility="gone"
+			app:backgroundTint="#0000"
+			app:icon="@drawable/ic_audio"
+			app:iconTint="#fff"
+			tools:visibility="visible" />
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/player_settings"
+			style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:backgroundTint="#0000"
+			app:icon="@drawable/ic_settings"
+			app:iconTint="#fff" />
+	</LinearLayout>
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:layout_marginBottom="68dp">
+
+		<com.github.vkay94.timebar.YouTubeTimeBarPreview
+			android:id="@+id/player_storyboard"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="16dp"
+			app:yt_chapter_title_max_width="240dp"
+			app:yt_preview_height="90dp"
+			app:yt_preview_width="160dp" />
+	</FrameLayout>
+
+	<com.github.vkay94.timebar.YouTubeTimeBar
+		android:id="@id/exo_progress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:layout_marginBottom="48dp" />
+</FrameLayout>
