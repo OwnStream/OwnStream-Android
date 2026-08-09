@@ -274,7 +274,9 @@ class PlayerActivity : AppCompatActivity(), Player.Listener, YouTubeTimeBarPrevi
 
 		lifecycleScope.launch(Dispatchers.IO) {
 			try {
-				val finished = (position.toFloat() / duration.toFloat()) > .9
+				val finished = video.segments?.lastOrNull { it.type == "Ending" }
+					?.let { position > it.startMilliseconds }
+					?: ((position.toFloat() / duration.toFloat()) > .9)
 				client.updateWatchProgress(videoId, duration.toInt(), position.toInt(), finished)
 			} catch (e: Exception) {
 				Log.w(this.javaClass.name, "Failed to update watch progress", e)
