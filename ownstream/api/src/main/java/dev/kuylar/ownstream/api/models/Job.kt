@@ -1,5 +1,8 @@
 package dev.kuylar.ownstream.api.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Job(
 	val id: String,
 	val jobType: String,
