@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.kuylar.ownstream.api
 
 import android.os.Build
@@ -26,12 +28,23 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		}
 	}
 
-	private suspend inline fun <reified T> get(url: String): ApiResponse<T> {
-		val resp = client
-			.get("${instanceHost.trimEnd('/')}/${url.trimStart('/')}?locale=$locale") {
-				if (token != null) header("Authorization", "Bearer $token")
-				header("User-Agent", userAgent)
+	private suspend inline fun <reified T> get(url: String, query: Map<String, String?>? = null): ApiResponse<T> {
+		var finalUrl = instanceHost.trimEnd('/') + '/' + url.trimStart('/')
+		val finalQuery = (query ?: emptyMap()).toMutableMap()
+		locale?.let { finalQuery["locale"] = it }
+		
+		finalUrl += '?' + finalQuery.entries.filter { it.value != null }.joinToString("&") {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				"${it.key}=${URLEncoder.encode(it.value, Charsets.UTF_8)}"
+			} else {
+				@Suppress("DEPRECATION")
+				"${it.key}=${URLEncoder.encode(it.value)}"
 			}
+		}
+		val resp = client.get(finalUrl) {
+			if (token != null) header("Authorization", "Bearer $token")
+			header("User-Agent", userAgent)
+		}
 		return ApiResponse(
 			resp.status.value,
 			try {
@@ -43,14 +56,25 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		)
 	}
 
-	private suspend inline fun <reified T> post(url: String, body: Any?): ApiResponse<T> {
-		val resp = client
-			.post("${instanceHost.trimEnd('/')}/${url.trimStart('/')}") {
-				contentType(ContentType.Application.Json)
-				setBody(body)
-				if (token != null) header("Authorization", "Bearer $token")
-				header("User-Agent", userAgent)
+	private suspend inline fun <reified T> post(url: String, query: Map<String, String?>? = null, body: Any?): ApiResponse<T> {
+		var finalUrl = instanceHost.trimEnd('/') + '/' + url.trimStart('/')
+		val finalQuery = (query ?: emptyMap()).toMutableMap()
+		locale?.let { finalQuery["locale"] = it }
+
+		finalUrl += '?' + finalQuery.entries.filter { it.value != null }.joinToString("&") {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				"${it.key}=${URLEncoder.encode(it.value, Charsets.UTF_8)}"
+			} else {
+				@Suppress("DEPRECATION")
+				"${it.key}=${URLEncoder.encode(it.value)}"
 			}
+		}
+		val resp = client.post(finalUrl) {
+			contentType(ContentType.Application.Json)
+			setBody(body)
+			if (token != null) header("Authorization", "Bearer $token")
+			header("User-Agent", userAgent)
+		}
 		return ApiResponse(
 			resp.status.value,
 			try {
@@ -111,7 +135,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 	}
 
 	suspend fun login(username: String, password: String): ApiResponse<LoginResponse> {
-		val resp = post<LoginResponse>("/api/auth/login", LoginRequest(username, password));
+		val resp = post<LoginResponse>("/api/auth/login", body = LoginRequest(username, password));
 		resp.response?.accessToken?.let { setAuth(it) }
 		return resp
 	}
@@ -122,12 +146,17 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 	suspend fun getHomeShelf(id: String) = get<List<ShelfItem>>("/api/home/$id")
 	suspend fun getLibraries() = get<List<Library>>("/api/content/library")
 	suspend fun getLibraryItems(
-		libraryId: String,
-		typeFilter: String,
+		libraryId: String?,
+		typeFilter: String?,
 		page: Int = 0,
 		limit: Int = 40
-	) = get<PagedResponse<Content>>("/api/content/library/$libraryId?typeFilter=$typeFilter&page=$page&limit=$limit")
-
+	) = get<PagedResponse<Content>>(
+		"/api/content/library/$libraryId", mapOf(
+			"typeFilter" to typeFilter,
+			"page" to page.toString(),
+			"limit" to limit.toString()
+		)
+	)
 	suspend fun getContentDetails(id: String) = get<Content>("/api/content/$id/details")
 	suspend fun getSeasons(id: String) = get<List<Season>>("/api/content/$id/seasons")
 	suspend fun getEpisode(id: String) = get<Episode>("/api/content/episode/$id")
@@ -142,11 +171,11 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		markWatched: Boolean? = null
 	) = post<Any>(
 		"/api/progress/update",
-		UpdateWatchProgressRequest(videoId, videoLength, watchedMilliseconds, markWatched)
+		body = UpdateWatchProgressRequest(videoId, videoLength, watchedMilliseconds, markWatched)
 	)
 	suspend fun updateWatchProgress(videoId: String, markWatched: Boolean) = post<Any>(
 		"/api/progress/update",
-		UpdateWatchProgressRequest(videoId, null, null, markWatched)
+		body = UpdateWatchProgressRequest(videoId, null, null, markWatched)
 	)
 	suspend fun getEpisodeToWatch(contentId: String) = get<EpisodeToWatchResponse>("/api/progress/upNext/$contentId")
 	suspend fun getManagementLibraries() = get<List<Library>>("/api/manage/libraries/list")
@@ -165,7 +194,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		name: String,
 		path: String,
 	) = post<SuccessResponse.WithData<Library>>(
-		"/api/manage/libraries/new", mapOf(
+		"/api/manage/libraries/new", body = mapOf(
 			"name" to name,
 			"path" to path,
 		)
@@ -193,14 +222,20 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		type: String,
 		transcodeLibraryId: String
 	) = post<SuccessResponse.WithData<InputLibrary>>(
-		"/api/manage/inputLibraries/new", mapOf(
+		"/api/manage/inputLibraries/new", body = mapOf(
 			"name" to name,
 			"path" to path,
 			"type" to type,
 			"transcodeLibraryId" to transcodeLibraryId
 		)
 	)
-	suspend fun getJobs(delta: Long = 0, page: Int = 0, limit: Int = 20) = get<PagedResponse<Job>>("/api/manage/jobs?delta=$delta&page=$page&limit=$limit")
+	suspend fun getJobs(delta: Long = 0, page: Int = 0, limit: Int = 20) = get<PagedResponse<Job>>(
+		"/api/manage/jobs", mapOf(
+			"delta" to delta.toString(),
+			"page" to page.toString(),
+			"limit" to limit.toString()
+		)
+	)
 	suspend fun requeueJob(id: String) = get<SuccessResponse>("/api/manage/jobs/$id/requeue")
 	suspend fun stopJob(id: String) = get<SuccessResponse>("/api/manage/jobs/$id/stop")
 	suspend fun getAllUsers() = get<List<User>>("/api/manage/users/list")
@@ -212,7 +247,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		password: String? = null,
 		permissions: List<String>? = null
 	) = post<User>(
-		"/api/manage/users/$id", mapOf(
+		"/api/manage/users/$id", body = mapOf(
 			"username" to username,
 			"password" to password,
 			"permissions" to permissions,
@@ -223,7 +258,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		username: String? = null,
 		password: String? = null,
 	) = post<User>(
-		"/api/manage/users/$id/new", mapOf(
+		"/api/manage/users/$id/new", body = mapOf(
 			"username" to username,
 			"password" to password,
 		)
@@ -233,18 +268,44 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		username: String? = null,
 		password: String? = null,
 	) = post<User>(
-		"/api/manage/users/$id/setupNew", mapOf(
+		"/api/manage/users/$id/setupNew", body = mapOf(
 			"username" to username,
 			"password" to password,
 		)
 	)
-	suspend fun quickLoginStart(deviceName: String) = get<QuickLoginStartResponse>("/api/auth/remote/start?deviceName=$deviceName")
-	suspend fun quickLoginCheck(token: String) = get<QuickLoginCheckResponse>("/api/auth/remote/check?token=$token")
-	suspend fun quickLoginAuthorize(code: String, deviceNameHash: String? = null, asUser: String? = null) = get<QuickLoginAuthorizeResponse>("/api/auth/remote/authorize?code=$code&deviceNameHash=$deviceNameHash&asUser=$asUser")
+	suspend fun quickLoginStart(deviceName: String) = get<QuickLoginStartResponse>(
+		"/api/auth/remote/start", mapOf(
+			"deviceName" to deviceName
+		)
+	)
+	suspend fun quickLoginCheck(token: String) = get<QuickLoginCheckResponse>(
+		"/api/auth/remote/check", mapOf(
+			"token" to token
+		)
+	)
+	suspend fun quickLoginAuthorize(
+		code: String,
+		deviceNameHash: String? = null,
+		asUser: String? = null
+	) = get<QuickLoginAuthorizeResponse>(
+		"/api/auth/remote/authorize", mapOf(
+			"code" to code,
+			"deviceNameHash" to deviceNameHash,
+			"asUser" to asUser
+		)
+	)
 	suspend fun quickLoginSessions() = get<List<QuickLoginSession>>("/api/auth/remote/sessions")
-	suspend fun search(query: String, type: String = "all", offset: Int = 0, limit: Int = 20) = get<SearchResponse>("/api/search?q=$query&type=$type&offset=$offset&limit=$limit")
+	suspend fun search(query: String, type: String = "all", offset: Int = 0, limit: Int = 20) =
+		get<SearchResponse>(
+			"/api/search", mapOf(
+				"q" to query,
+				"type" to type,
+				"offset" to offset.toString(),
+				"limit" to limit.toString()
+			)
+		)
 	suspend fun getSettings() = get<JsonObject>("/api/settings/get")
-	suspend fun updateSettings(config: JsonObject) = post<JsonObject>("/api/settings/update", config)
+	suspend fun updateSettings(config: JsonObject) = post<JsonObject>("/api/settings/update", body = config)
 	// TODO: /api/settings/benchmark
 
 
