@@ -20,4 +20,9 @@
 		android:name="dev.kuylar.ownstream.ui.fragment.ShowFragment"
 		android:label="@string/nav_show"
 		tools:layout="@layout/fragment_show" />
+	<fragment
+		android:id="@+id/nav_library"
+		android:name="dev.kuylar.ownstream.ui.fragment.LibraryFragment"
+		android:label="@string/nav_library"
+		tools:layout="@layout/fragment_library" />
 </navigation>

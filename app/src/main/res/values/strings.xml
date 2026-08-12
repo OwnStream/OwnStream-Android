@@ -46,4 +46,8 @@
 	<string name="none">None</string>
 	<string name="subtitle_selector_unlabeled">Subtitle #%d</string>
 	<string name="subtitle_selector_template">%s • %s</string>
+	<string name="nav_library">Library</string>
+	<string name="content_type_movies">Movies</string>
+	<string name="content_type_tv">TV Shows</string>
+	<string name="generic_error">Something went wrong</string>
 </resources>
