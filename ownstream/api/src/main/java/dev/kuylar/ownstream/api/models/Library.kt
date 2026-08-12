@@ -7,5 +7,5 @@ data class Library(
 	val id: String,
 	val name: String,
 	val path: String,
-	val diskUsage: DiskUsage
+	val diskUsage: DiskUsage?
 )
