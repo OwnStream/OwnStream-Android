@@ -16,6 +16,6 @@ data class Episode(
 	val updatedAt: String,
 	val releasedAt: String,
 	val videos: List<Video>,
-	val runtime: String,
+	val runtime: String?,
 	val progress: Float?
 )
