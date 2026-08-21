@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.R
+import dev.kuylar.ownstream.Utils.visibleIfNotBlank
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.databinding.FragmentShowBinding
 import dev.kuylar.ownstream.ui.activity.PlayerActivity
@@ -108,6 +109,7 @@ class ShowFragment : Fragment() {
 		}
 
 		binding.tagline.text = show.translatedTagline ?: show.originalTagline
+		binding.tagline.visibleIfNotBlank()
 
 		val isContinue = episodeToWatch?.continueWatching != null
 		val episode = episodeToWatch?.continueWatching ?: episodeToWatch?.upNext
