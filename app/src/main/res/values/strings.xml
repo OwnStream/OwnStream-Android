@@ -50,4 +50,18 @@
 	<string name="content_type_movies">Movies</string>
 	<string name="content_type_tv">TV Shows</string>
 	<string name="generic_error">Something went wrong</string>
+	<string name="nav_serverManagement">Manage Server</string>
+	<string name="server_management_transcoding">Transcoding</string>
+	<string name="server_management_benchmark">Benchmark</string>
+	<string name="server_management_people">Users</string>
+	<string name="server_management_transcode">Transcode Libraries</string>
+	<string name="server_management_input">Input Libraries</string>
+	<string name="server_management_webhooks">Webhooks</string>
+	<string name="server_management_jobs">Jobs</string>
+	<string name="server_management_orphaned">Orphaned Videos</string>
+	<string name="job_state_pending_template">Created %s ago</string>
+	<string name="job_state_starting_template">About to start…</string>
+	<string name="job_state_processing_template">Running for %s</string>
+	<string name="job_state_completed_template">Finished %s ago (ran for %s)</string>
+	<string name="job_state_failed_template">Failed %s ago (ran for %s)</string>
 </resources>

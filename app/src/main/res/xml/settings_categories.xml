@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><!--suppress DeprecatedClassUsageInspection -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<Preference
+		android:icon="@drawable/ic_settings_video"
+		android:key="category_transcoding"
+		android:title="@string/server_management_transcoding" />
+	<Preference
+		android:icon="@drawable/ic_settings_benchmark"
+		android:key="category_benchmark"
+		android:title="@string/server_management_benchmark" />
+	<Preference
+		android:icon="@drawable/ic_settings_people"
+		android:key="category_people"
+		android:title="@string/server_management_people" />
+	<Preference
+		android:icon="@drawable/ic_settings_library_transcode"
+		android:key="category_transcode"
+		android:title="@string/server_management_transcode" />
+	<Preference
+		android:icon="@drawable/ic_settings_library_input"
+		android:key="category_input"
+		android:title="@string/server_management_input" />
+	<Preference
+		android:icon="@drawable/ic_settings_webhooks"
+		android:key="category_webhooks"
+		android:title="@string/server_management_webhooks" />
+	<Preference
+		android:icon="@drawable/ic_settings_jobs"
+		android:key="category_jobs"
+		android:title="@string/server_management_jobs" />
+	<Preference
+		android:icon="@drawable/ic_settings_orphaned_video"
+		android:key="category_orphaned"
+		android:title="@string/server_management_orphaned" />
+</PreferenceScreen>

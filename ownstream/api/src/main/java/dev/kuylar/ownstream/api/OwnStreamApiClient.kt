@@ -230,14 +230,14 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		)
 	)
 	suspend fun getJobs(delta: Long = 0, page: Int = 0, limit: Int = 20) = get<PagedResponse<Job>>(
-		"/api/manage/jobs", mapOf(
+		"/api/jobs/list", mapOf(
 			"delta" to delta.toString(),
 			"page" to page.toString(),
 			"limit" to limit.toString()
 		)
 	)
-	suspend fun requeueJob(id: String) = get<SuccessResponse>("/api/manage/jobs/$id/requeue")
-	suspend fun stopJob(id: String) = get<SuccessResponse>("/api/manage/jobs/$id/stop")
+	suspend fun requeueJob(id: String) = get<SuccessResponse>("/api/jobs/$id/requeue")
+	suspend fun stopJob(id: String) = get<SuccessResponse>("/api/jobs/$id/stop")
 	suspend fun getAllUsers() = get<List<User>>("/api/manage/users/list")
 	suspend fun getUser(id: String) = get<User>("/api/manage/users/$id")
 	suspend fun deleteUser(id: String) = delete<JsonObject>("/api/manage/users/$id")

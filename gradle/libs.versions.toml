@@ -24,6 +24,7 @@ libass = "0.5.0-beta01"
 leanback = "1.2.0"
 youtubetimebar = "0.2.3"
 doubletapplayerview = "1.0.5"
+preferenceKtx = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +59,7 @@ youtubetimebar = { module = "com.github.kuylar:YouTubeTimeBar", version.ref = "y
 # https://github.com/vkay94/DoubleTapPlayerView
 # Forked version to support androidx.media3
 doubletapplayerview = { module = "com.github.kuylar:DoubleTapPlayerView", version.ref = "doubletapplayerview" }
+androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

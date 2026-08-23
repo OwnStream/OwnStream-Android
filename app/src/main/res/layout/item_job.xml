@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:paddingHorizontal="16dp"
+		android:paddingVertical="8dp">
+
+		<ImageView
+			android:id="@+id/icon"
+			android:layout_width="32dp"
+			android:layout_height="32dp"
+			android:layout_marginEnd="8dp"
+			android:importantForAccessibility="no"
+			android:src="@drawable/ic_audio" />
+
+		<LinearLayout
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/title"
+				style="?textAppearanceTitleMedium"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				tools:text="DetectIntroSections" />
+
+			<TextView
+				android:id="@+id/message"
+				style="?textAppearanceBodyMedium"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginVertical="2dp"
+				android:ellipsize="end"
+				android:maxLines="1"
+				tools:text="Complete" />
+
+			<TextView
+				android:id="@+id/state"
+				style="?textAppearanceLabelMedium"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				tools:text="Finished about 20 hours ago (ran for 19s)" />
+		</LinearLayout>
+	</LinearLayout>
+
+	<com.google.android.material.progressindicator.LinearProgressIndicator
+		android:id="@+id/progress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:indeterminate="true" />
+</LinearLayout>

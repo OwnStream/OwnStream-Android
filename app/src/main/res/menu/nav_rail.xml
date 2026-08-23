@@ -9,4 +9,8 @@
 		android:id="@+id/nav_library"
 		android:icon="@drawable/ic_library"
 		android:title="@string/nav_library" />
+	<item
+		android:id="@+id/nav_serverManagement"
+		android:icon="@drawable/ic_settings"
+		android:title="@string/nav_serverManagement" />
 </menu>

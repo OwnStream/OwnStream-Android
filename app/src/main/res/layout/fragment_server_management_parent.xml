@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.slidingpanelayout.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".ui.fragment.servermanagement.ServerManagementParentFragment">
+
+	<androidx.fragment.app.FragmentContainerView
+		android:id="@+id/list_pane"
+		android:name="dev.kuylar.ownstream.ui.fragment.servermanagement.ServerManagementItemFragment"
+		android:layout_width="280dp"
+		android:layout_height="match_parent"
+		android:layout_gravity="start"
+		android:layout_marginBottom="80dp" />
+
+	<androidx.fragment.app.FragmentContainerView
+		android:id="@+id/detail_container"
+		android:name="dev.kuylar.ownstream.ui.fragment.HomeFragment"
+		android:layout_width="300dp"
+		android:layout_height="match_parent"
+		android:layout_marginBottom="80dp"
+		android:layout_weight="1" />
+
+
+</androidx.slidingpanelayout.widget.SlidingPaneLayout>
