@@ -1,7 +1,9 @@
 package dev.kuylar.ownstream.ui.activity
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -37,16 +39,28 @@ class MainActivity : AppCompatActivity() {
 		val navHostFragment =
 			supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 		val navController = navHostFragment.navController
-		binding.topAppBar.setupWithNavController(navController)
+		binding.toolbar.setupWithNavController(navController)
 		binding.bottomNavigation.setupWithNavController(navController)
+		binding.navigationRail.setupWithNavController(navController)
 
-		binding.bottomNavigation.post {
-			binding.navHostFragment.setPadding(
-				binding.navHostFragment.paddingLeft,
-				binding.navHostFragment.paddingTop,
-				binding.navHostFragment.paddingRight,
-				binding.bottomNavigation.height
-			)
+		setupNavigation()
+	}
+
+	override fun onConfigurationChanged(newConfig: Configuration) {
+		super.onConfigurationChanged(newConfig)
+		setupNavigation()
+	}
+
+	private fun setupNavigation() {
+		val screenWidthDp = resources.configuration.screenWidthDp
+		val useNavigationRail = screenWidthDp >= 600
+
+		if (useNavigationRail) {
+			binding.navigationRail.visibility = View.VISIBLE
+			binding.bottomNavigation.visibility = View.GONE
+		} else {
+			binding.navigationRail.visibility = View.GONE
+			binding.bottomNavigation.visibility = View.VISIBLE
 		}
 	}
 }
