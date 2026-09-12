@@ -2,7 +2,10 @@
 <resources>
 	<item name="setup_instance_uri" type="id"/>
 	<item name="setup_instance_continue" type="id"/>
+	<item name="setup_login_type_quick" type="id"/>
+	<item name="setup_login_type_password" type="id"/>
 	<item name="setup_account_username" type="id"/>
 	<item name="setup_account_password" type="id"/>
 	<item name="setup_account_continue" type="id"/>
+	<item name="setup_quick_login_back" type="id"/>
 </resources>

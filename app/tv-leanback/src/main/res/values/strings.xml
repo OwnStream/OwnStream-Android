@@ -16,12 +16,21 @@
 	<string name="setup_instance_breadcrumb">Setup: Step 1</string>
 	<string name="setup_instance_continue">Continue</string>
 	<string name="setup_instance_uri">Instance URL</string>
+	<string name="setup_login_type_title">Log in to your account</string>
+	<string name="setup_login_type_description">Found your instance! How would you like to log in?</string>
+	<string name="setup_login_type_breadcrumb">Setup: Step 2</string>
+	<string name="setup_login_type_quick">Quick Login</string>
+	<string name="setup_login_type_password">Username &amp; Password</string>
 	<string name="setup_account_title">Log in to your account</string>
-	<string name="setup_account_description">Found your instance! Let\'s log in now. You can add more accounts for other people in later steps.</string>
-	<string name="setup_account_breadcrumb">Setup: Step 2</string>
+	<string name="setup_account_description">Let\'s log in now. You can add more accounts for other people in later steps.</string>
+	<string name="setup_account_breadcrumb">Setup: Step 3</string>
 	<string name="setup_account_username">Username</string>
 	<string name="setup_account_password">Password</string>
 	<string name="setup_account_continue">Continue</string>
+	<string name="setup_quick_login_title">Your Quick Login code is: %s</string>
+	<string name="setup_quick_login_description">Open OwnStream from another device, and enter your Quick Login code to log in.</string>
+	<string name="setup_quick_login_breadcrumb">Setup: Step 3</string>
+	<string name="setup_quick_login_back">Go Back</string>
 	<string name="logging_in">Logging in, please wait…</string>
 	<string name="login_fail">Failed to log in: %s</string>
 

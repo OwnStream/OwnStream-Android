@@ -86,7 +86,7 @@ class SetupFragmentInstanceUri : GuidedStepSupportFragment() {
 				sp.edit {
 					putString("host", url.toString())
 				}
-				add(fm, SetupFragmentAccountLogin())
+				add(fm, SetupFragmentLoginType())
 			}
 		}
 		return GuidedAction.ACTION_ID_CURRENT
