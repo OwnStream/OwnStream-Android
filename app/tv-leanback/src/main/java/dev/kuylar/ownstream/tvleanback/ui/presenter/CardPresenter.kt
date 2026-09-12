@@ -75,8 +75,8 @@ class CardPresenter : Presenter() {
 	companion object {
 		private const val TAG = "CardPresenter"
 
-		private const val CARD_WIDTH_LANDSCAPE = 313
-		private const val CARD_WIDTH_PORTRAIT = 117
-		private const val CARD_HEIGHT = 176
+		private const val CARD_WIDTH_LANDSCAPE = 268f
+		private const val CARD_WIDTH_PORTRAIT = 100f
+		private const val CARD_HEIGHT = 150f
 	}
 }

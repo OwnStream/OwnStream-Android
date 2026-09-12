@@ -3,10 +3,14 @@ package dev.kuylar.ownstream.tvleanback.ui.view
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.Px
+import androidx.annotation.Dimension
 import dev.kuylar.ownstream.tvleanback.databinding.LayoutCardStandardBinding
+import kotlin.math.roundToInt
 
 open class MaterialCardView(
 	context: Context,
@@ -75,12 +79,12 @@ open class MaterialCardView(
 		}
 	}
 
-	fun setMainImageDimensions(width: Int, height: Int) {
+	fun setMainImageDimensions(@Dimension width: Float, @Dimension height: Float) {
 		val lp = binding.image.layoutParams
 		@Suppress("RemoveRedundantQualifierName") // yeah no this has to be stated explicitly, or it wont work lol
 		if (lp is android.view.ViewGroup.LayoutParams) {
-			lp.width = width
-			lp.height = height
+			lp.width = (width * context.resources.displayMetrics.density).roundToInt()
+			lp.height = (height * context.resources.displayMetrics.density).roundToInt()
 		}
 		binding.image.post {
 			binding.image.layoutParams = lp
