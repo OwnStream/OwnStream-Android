@@ -23,4 +23,11 @@ data class Content(
 	val runtime: String,
 	val ageRatings: Map<String, String>,
 	val externalIds: Map<String, String>,
-)
+) {
+	val title: String
+		get() = translatedTitle ?: originalTitle
+	val tagline: String
+		get() = translatedTagline ?: originalTagline
+	val description: String
+		get() = translatedDescription ?: originalDescription
+}

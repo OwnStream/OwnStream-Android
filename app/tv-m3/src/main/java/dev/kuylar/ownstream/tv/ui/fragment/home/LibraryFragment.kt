@@ -1,5 +1,6 @@
 package dev.kuylar.ownstream.tv.ui.fragment.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,6 +10,7 @@ import dev.kuylar.leanbackm3views.card.Card
 import dev.kuylar.leanbackm3views.grid.BaseGridFragment
 import dev.kuylar.leanbackm3views.util.dp
 import dev.kuylar.ownstream.api.OwnStreamApiClient
+import dev.kuylar.ownstream.tv.ui.activity.ContentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,23 +62,29 @@ class LibraryFragment : BaseGridFragment() {
 			}
 			// TODO: load more
 			items?.items?.let { list ->
-				setCards(list
+				setCards(
+					list
 					// should be server-side honestly
 					.sortedBy { it.translatedTitle ?: it.originalTitle }
 					.map {
-					Card(
-						title = it.translatedTitle ?: it.originalTitle,
-						subtitle = it.releasedAt.take(4),
-						image = it.images.poster,
-						backgroundImage = it.images.backdrop,
-						width = 120,
-						height = 180,
-						onClick = {
-							Toast.makeText(requireContext(), "Navigate: ${it.id}", Toast.LENGTH_SHORT)
-								.show()
-						}
-					)
-				})
+						Card(
+							title = it.translatedTitle ?: it.originalTitle,
+							subtitle = it.releasedAt.take(4),
+							image = it.images.poster,
+							backgroundImage = it.images.backdrop,
+							width = 120,
+							height = 180,
+							onClick = {
+								startActivity(
+									Intent(
+										requireContext(),
+										ContentActivity::class.java
+									).apply {
+										putExtra("id", it.id)
+									})
+							}
+						)
+					})
 			}
 		}
 	}

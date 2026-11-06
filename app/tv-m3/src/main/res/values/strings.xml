@@ -29,4 +29,14 @@
 	<string name="setup_server_select_title">Select a server</string>
 	<string name="setup_server_select_body">Please select a server from the list, or manually add one</string>
 	<string name="setup_server_select_new">Manually enter server address</string>
+	<string name="content_movie_watch">Watch</string>
+	<string name="content_movie_continue">Continue Watching</string>
+	<string name="content_tv_watch">Watch • S%d E%d</string>
+	<string name="content_tv_continue">Continue • S%d E%d</string>
+	<string name="content_extra_details">Details</string>
+	<string name="content_extra_details_quality">Quality</string>
+	<string name="content_extra_details_dub">Audio Languages</string>
+	<string name="content_extra_details_subs">Subtitles</string>
+	<string name="content_runtime">%dh %dm</string>
+	<string name="content_video_unavailable">Video Unavailable</string>
 </resources>

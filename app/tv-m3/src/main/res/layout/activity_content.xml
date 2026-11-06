@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/main"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".ui.activity.ContentActivity">
+
+	<ImageView
+		android:id="@+id/backdrop"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:foreground="@drawable/backdrop_foreground"
+		android:scaleType="fitEnd"
+		tools:src="@tools:sample/backgrounds/scenic" />
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:paddingHorizontal="40dp"
+			android:paddingVertical="64dp">
+
+			<TextView
+				android:id="@+id/content_title"
+				style="?textAppearanceDisplayLarge"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="12dp"
+				tools:text="Lorem Ipsum" />
+
+			<TextView
+				android:id="@+id/content_tagline"
+				style="?textAppearanceBodyMediumEmphasized"
+				android:layout_width="500dp"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="12dp"
+				android:ellipsize="end"
+				android:maxLines="2"
+				tools:text="Lorem just got Ipsumer" />
+
+			<LinearLayout
+				android:id="@+id/meta"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="12dp"
+				android:layout_marginVertical="8dp">
+
+				<!-- not available in OwnStream yet -->
+				<TextView
+					android:id="@+id/score"
+					style="?textAppearanceLabelMedium"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="12dp"
+					android:visibility="gone"
+					tools:text="Score: 7.5"
+					tools:visibility="visible" />
+
+				<TextView
+					android:id="@+id/rating"
+					style="?textAppearanceLabelMedium"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginHorizontal="4dp"
+					android:background="@drawable/rating_border"
+					tools:text="TV-PG" />
+
+				<!-- not available in OwnStream yet -->
+				<TextView
+					android:id="@+id/genres"
+					style="?textAppearanceLabelMedium"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="12dp"
+					android:layout_marginEnd="12dp"
+					android:visibility="gone"
+					tools:text="Action"
+					tools:visibility="visible" />
+
+				<TextView
+					android:id="@+id/runtime"
+					style="?textAppearanceLabelMedium"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="12dp"
+					android:text="@string/content_runtime" />
+
+				<TextView
+					android:id="@+id/year"
+					style="?textAppearanceLabelMedium"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="12dp"
+					tools:text="2026" />
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/content_description"
+				style="?textAppearanceBodyMedium"
+				android:layout_width="500dp"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="12dp"
+				android:ellipsize="end"
+				android:maxLines="2"
+				tools:text="@tools:sample/lorem/random" />
+
+			<dev.kuylar.leanbackm3views.component.TvFocusLinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="12dp">
+
+				<dev.kuylar.leanbackm3views.component.TvButton
+					android:id="@+id/watch"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/content_tv_continue" />
+			</dev.kuylar.leanbackm3views.component.TvFocusLinearLayout>
+
+			<LinearLayout
+				android:id="@+id/details"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+				<View
+					android:layout_width="match_parent"
+					android:layout_height="1dp"
+					android:layout_marginHorizontal="12dp"
+					android:layout_marginVertical="16dp"
+					android:background="?tvColorBorder" />
+
+				<TextView
+					style="?textAppearanceTitleMedium"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginHorizontal="12dp"
+					android:layout_marginVertical="8dp"
+					android:text="@string/content_extra_details" />
+
+				<LinearLayout
+					android:layout_width="500dp"
+					android:layout_height="wrap_content"
+					android:layout_marginHorizontal="12dp"
+					android:orientation="horizontal">
+
+					<LinearLayout
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:orientation="vertical">
+
+						<TextView
+							style="?textAppearanceTitleSmallEmphasized"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginVertical="4dp"
+							android:text="@string/content_extra_details_quality" />
+
+						<TextView
+							android:id="@+id/content_extra_details_quality"
+							style="?textAppearanceBodyMedium"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							tools:text="1920x1080" />
+					</LinearLayout>
+
+					<LinearLayout
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:orientation="vertical">
+
+						<TextView
+							style="?textAppearanceTitleSmallEmphasized"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginVertical="4dp"
+							android:text="@string/content_extra_details_dub" />
+
+						<TextView
+							android:id="@+id/content_extra_details_dub"
+							style="?textAppearanceBodyMedium"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							tools:text="English" />
+					</LinearLayout>
+
+					<LinearLayout
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:orientation="vertical">
+
+						<TextView
+							style="?textAppearanceTitleSmallEmphasized"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginVertical="4dp"
+							android:text="@string/content_extra_details_subs" />
+
+						<TextView
+							android:id="@+id/content_extra_details_subs"
+							style="?textAppearanceBodyMedium"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							tools:text="English" />
+					</LinearLayout>
+
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
+</FrameLayout>
