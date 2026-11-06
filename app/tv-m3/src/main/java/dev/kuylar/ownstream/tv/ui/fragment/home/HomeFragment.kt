@@ -13,6 +13,7 @@ import dev.kuylar.leanbackm3views.shelf.ShelfType
 import dev.kuylar.leanbackm3views.util.dp
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.tv.R
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,7 +52,8 @@ class HomeFragment : BaseShelfFragment() {
 						getShelf("recentContent/tv", getString(R.string.shelf_series)),
 					)
 				}
-			}.onFailure {
+			}.onFailure { e ->
+				if (e is CancellationException) return@onFailure
 				TODO("Report errors")
 				//(activity as? MainActivity)?.onError(it)
 			}.getOrElse {
