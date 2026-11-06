@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/main"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context=".ui.activity.MainActivity">
+
+	<androidx.fragment.app.FragmentContainerView
+		android:id="@+id/fragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" />
+
+	<dev.kuylar.leanbackm3views.component.TvFocusLinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@drawable/tabs_background"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:paddingStart="58dp"
+		android:paddingTop="24dp"
+		android:paddingEnd="46dp"
+		android:paddingBottom="8dp">
+
+		<dev.kuylar.leanbackm3views.component.TvTabRow
+			android:id="@+id/tabs_row"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="8dp"
+			android:layout_weight="1"
+			app:tvTabKeepFocus="false"
+			app:tvTabSpacing="16dp">
+
+			<dev.kuylar.leanbackm3views.component.TvTab
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tab_home" />
+
+			<dev.kuylar.leanbackm3views.component.TvTab
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tab_movies" />
+
+			<dev.kuylar.leanbackm3views.component.TvTab
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tab_tv" />
+
+			<Space
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:layout_weight="1" />
+
+			<dev.kuylar.leanbackm3views.component.TvTab
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end"
+				android:icon="@drawable/ic_search"
+				android:text="@string/tab_search"
+				app:tvExpandOnFocus="true" />
+
+			<dev.kuylar.leanbackm3views.component.TvTab
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end"
+				android:icon="@drawable/ic_profile"
+				android:text="@string/tab_profile"
+				app:tvExpandOnFocus="true" />
+
+			<dev.kuylar.leanbackm3views.component.TvTab
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end"
+				android:icon="@drawable/ic_settings"
+				android:text="@string/tab_settings"
+				app:tvExpandOnFocus="true" />
+		</dev.kuylar.leanbackm3views.component.TvTabRow>
+	</dev.kuylar.leanbackm3views.component.TvFocusLinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,32 @@
+<resources>
+	<string name="app_name">OwnStream</string>
+	<!-- TODO: Remove or change this placeholder text -->
+	<string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="setup_welcome_title">Welcome to OwnStream</string>
+	<string name="setup_welcome_body">Let\'s get you set up. Where is your OwnStream server located at?</string>
+	<string name="setup_host_label">Server URL</string>
+	<string name="setup_host_placeholder">http://…</string>
+	<string name="setup_host_submit">Continue</string>
+	<string name="setup_login_title">Add your account</string>
+	<string name="setup_login_body">Open OwnStream in another device, go to Quick Login, and enter the following code:</string>
+	<string name="setup_login_manual">Manually enter password instead</string>
+	<string name="error_quick_login_user_info_failed">Failed to get user information.</string>
+	<string name="shelf_continue">Continue Watching</string>
+	<string name="shelf_nextup">Up Next</string>
+	<string name="shelf_recents">Recently Added</string>
+	<string name="shelf_movies">Movies</string>
+	<string name="shelf_series">TV Shows</string>
+
+	<string name="tab_home">Home</string>
+	<string name="tab_movies">Movies</string>
+	<string name="tab_tv">TV Shows</string>
+	<string name="tab_search">Search</string>
+	<string name="tab_profile">Profile</string>
+	<string name="tab_settings">Settings</string>
+	<string name="search_hint">Search</string>
+	<string name="search_label">Search</string>
+	<string name="settings_description">Global Search Settings</string>
+	<string name="setup_server_select_title">Select a server</string>
+	<string name="setup_server_select_body">Please select a server from the list, or manually add one</string>
+	<string name="setup_server_select_new">Manually enter server address</string>
+</resources>

@@ -2,7 +2,6 @@ package dev.kuylar.ownstream.tvleanback.ui.fragment
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,10 +16,10 @@ import androidx.core.graphics.drawable.toDrawable
 
 class SubtitleSelectorDialogFragment : DialogFragment() {
 	interface Host {
-		fun getSubtitleOptions(): List<Media3ExoPlayerAdapter.SubtitleOption>
+		fun getSubtitleOptions(): List<Media3ExoPlayerAdapter.TrackOption>
 		fun areSubtitlesDisabled(): Boolean
 		fun onSubtitleDisabled()
-		fun onSubtitleSelected(option: Media3ExoPlayerAdapter.SubtitleOption)
+		fun onSubtitleSelected(option: Media3ExoPlayerAdapter.TrackOption)
 	}
 
 	companion object {

@@ -42,6 +42,7 @@ import dev.kuylar.ownstream.api.models.Video
 import dev.kuylar.ownstream.databinding.ActivityPlayerBinding
 import dev.kuylar.ownstream.ui.SkippableSegment
 import dev.kuylar.ownstream.ui.StoryboardTransformation
+import dev.kuylar.ownstream.ui.fragment.PlayerAudioSelectorFragment
 import dev.kuylar.ownstream.ui.fragment.PlayerCaptionSelectorFragment
 import io.github.peerless2012.ass.media.kt.buildWithAssSupport
 import io.github.peerless2012.ass.media.type.AssRenderType
@@ -306,8 +307,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener, YouTubeTimeBarPrevi
 				}
 		}
 		findViewById<MaterialButton>(R.id.player_audio).setOnClickListener {
-			Toast.makeText(this, "todo", Toast.LENGTH_SHORT).show()
-			//PlayerSettingsFragment(player, "audio").show(fragmentManager, null)
+			if (player.currentTracks.groups.any { it.type == C.TRACK_TYPE_AUDIO })
+				PlayerAudioSelectorFragment().apply {
+					setPlayer(player)
+					show(supportFragmentManager, null)
+				}
 		}
 		findViewById<MaterialButton>(R.id.player_back).setOnClickListener {
 			player.stop()
@@ -345,6 +349,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener, YouTubeTimeBarPrevi
 		if (events.contains(Player.EVENT_TRACKS_CHANGED)) {
 			findViewById<MaterialButton>(R.id.player_captions)
 				.visibleIf(player.currentTracks.groups.any { it.type == C.TRACK_TYPE_TEXT })
+			findViewById<MaterialButton>(R.id.player_audio)
+				.visibleIf(player.currentTracks.groups.count { it.type == C.TRACK_TYPE_AUDIO } > 1)
 		}
 		if (player.playbackState == Player.STATE_BUFFERING) {
 			playPauseButton.visibility = View.INVISIBLE

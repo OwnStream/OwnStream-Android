@@ -53,4 +53,6 @@
 	<string name="subtitle_selector_title">Subtitles</string>
 	<string name="subtitle_selector_unlabeled">Subtitle %d</string>
 	<string name="subtitle_track_off">Off</string>
+	<string name="audio_track_selector_title">Audio Tracks</string>
+	<string name="audio_track__selector_unlabeled">Audio Track %d</string>
 </resources>

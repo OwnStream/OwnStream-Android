@@ -27,3 +27,4 @@ rootProject.name = "OwnStream"
 include(":app")
 include(":ownstream:api")
 include(":app:tv-leanback")
+include(":app:tv-m3")

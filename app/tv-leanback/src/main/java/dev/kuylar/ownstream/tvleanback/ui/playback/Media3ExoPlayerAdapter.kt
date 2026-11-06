@@ -34,7 +34,7 @@ class Media3ExoPlayerAdapter(
 	private val context: Context,
 	private val updatePeriodMs: Long = 50L
 ) : PlayerAdapter() {
-	data class SubtitleOption(
+	data class TrackOption(
 		val groupIndex: Int,
 		val trackIndex: Int,
 		val label: String,
@@ -242,8 +242,8 @@ class Media3ExoPlayerAdapter(
 	}
 
 	@OptIn(UnstableApi::class)
-	fun getSubtitleOptions(): List<SubtitleOption> {
-		val options = mutableListOf<SubtitleOption>()
+	fun getSubtitleOptions(): List<TrackOption> {
+		val options = mutableListOf<TrackOption>()
 		player.currentTracks.groups.forEachIndexed { groupIndex, group ->
 			if (group.type != C.TRACK_TYPE_TEXT) return@forEachIndexed
 
@@ -255,7 +255,7 @@ class Media3ExoPlayerAdapter(
 					?: format.language?.let(::languageLabel)
 					?: context.getString(R.string.subtitle_selector_unlabeled, options.size + 1)
 
-				options.add(SubtitleOption(
+				options.add(TrackOption(
 					groupIndex = groupIndex,
 					trackIndex = trackIndex,
 					label = label,
@@ -284,7 +284,7 @@ class Media3ExoPlayerAdapter(
 	}
 
 	@OptIn(UnstableApi::class)
-	fun selectSubtitle(option: SubtitleOption) {
+	fun selectSubtitle(option: TrackOption) {
 		val groups = player.currentTracks.groups
 		val group = groups.getOrNull(option.groupIndex) ?: return
 		if (group.type != C.TRACK_TYPE_TEXT || !group.isTrackSupported(option.trackIndex)) return
@@ -294,6 +294,45 @@ class Media3ExoPlayerAdapter(
 			.buildUpon()
 			.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
 			.clearOverridesOfType(C.TRACK_TYPE_TEXT)
+			.addOverride(TrackSelectionOverride(group.mediaTrackGroup, listOf(option.trackIndex)))
+			.build()
+	}
+
+	@OptIn(UnstableApi::class)
+	fun getAudioTrackOptions(): List<TrackOption> {
+		val options = mutableListOf<TrackOption>()
+		player.currentTracks.groups.forEachIndexed { groupIndex, group ->
+			if (group.type != C.TRACK_TYPE_AUDIO) return@forEachIndexed
+
+			val mediaTrackGroup = group.mediaTrackGroup
+			for (trackIndex in 0 until mediaTrackGroup.length) {
+				if (!group.isTrackSupported(trackIndex)) continue
+				val format = mediaTrackGroup.getFormat(trackIndex)
+				val label = format.label?.takeIf { it.isNotBlank() }
+					?: format.language?.let(::languageLabel)
+					?: context.getString(R.string.audio_track__selector_unlabeled, options.size + 1)
+
+				options.add(TrackOption(
+					groupIndex = groupIndex,
+					trackIndex = trackIndex,
+					label = label,
+					isSelected = group.isTrackSelected(trackIndex)
+				))
+			}
+		}
+		return options
+	}
+
+	@OptIn(UnstableApi::class)
+	fun selectAudioTrack(option: TrackOption) {
+		val groups = player.currentTracks.groups
+		val group = groups.getOrNull(option.groupIndex) ?: return
+		if (group.type != C.TRACK_TYPE_AUDIO || !group.isTrackSupported(option.trackIndex)) return
+		if (option.trackIndex !in 0 until group.mediaTrackGroup.length) return
+
+		player.trackSelectionParameters = player.trackSelectionParameters
+			.buildUpon()
+			.clearOverridesOfType(C.TRACK_TYPE_AUDIO)
 			.addOverride(TrackSelectionOverride(group.mediaTrackGroup, listOf(option.trackIndex)))
 			.build()
 	}

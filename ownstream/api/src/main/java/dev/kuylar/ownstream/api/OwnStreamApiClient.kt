@@ -5,6 +5,9 @@ package dev.kuylar.ownstream.api
 import android.os.Build
 import android.util.Log
 import dev.kuylar.ownstream.api.models.*
+import dev.kuylar.ownstream.api.store.AccountStore
+import dev.kuylar.ownstream.api.store.OwnStreamAccount
+import dev.kuylar.ownstream.api.store.OwnStreamServer
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -19,7 +22,11 @@ import io.ktor.utils.io.charsets.Charset
 import kotlinx.serialization.json.JsonObject
 import java.net.URLEncoder
 
-class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
+class OwnStreamApiClient(val store: AccountStore, val userAgent: String) {
+	var serverId: String? = null
+		private set
+	var accountId: String? = null
+		private set
 	private var token: String? = null
 	private var locale: String? = null
 	private val client = HttpClient {
@@ -27,12 +34,17 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 			json()
 		}
 	}
+	private var instanceHost: String = ""
 
-	private suspend inline fun <reified T> get(url: String, query: Map<String, String?>? = null): ApiResponse<T> {
+	private suspend inline fun <reified T> get(
+		url: String,
+		query: Map<String, String?>? = null,
+		tokenOverride: String? = null
+	): ApiResponse<T> {
 		var finalUrl = instanceHost.trimEnd('/') + '/' + url.trimStart('/')
 		val finalQuery = (query ?: emptyMap()).toMutableMap()
 		locale?.let { finalQuery["locale"] = it }
-		
+
 		finalUrl += '?' + finalQuery.entries.filter { it.value != null }.joinToString("&") {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 				"${it.key}=${URLEncoder.encode(it.value, Charsets.UTF_8)}"
@@ -41,8 +53,10 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 				"${it.key}=${URLEncoder.encode(it.value)}"
 			}
 		}
+		Log.d(TAG + "_net", "GET $finalUrl")
 		val resp = client.get(finalUrl) {
-			if (token != null) header("Authorization", "Bearer $token")
+			if ((tokenOverride ?: token )!= null)
+				header("Authorization", "Bearer ${tokenOverride ?: token}")
 			header("User-Agent", userAgent)
 		}
 		return ApiResponse(
@@ -69,6 +83,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 				"${it.key}=${URLEncoder.encode(it.value)}"
 			}
 		}
+		Log.d(TAG + "_net", "POST $finalUrl")
 		val resp = client.post(finalUrl) {
 			contentType(ContentType.Application.Json)
 			setBody(body)
@@ -126,7 +141,48 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		)
 	}
 
-	fun setAuth(token: String) {
+	private suspend fun getServer(): OwnStreamServer {
+		val servers = store.getServers()
+		if (servers.isEmpty()) throw IllegalStateException("API call attempted without any servers set")
+		if (servers.size == 1) return servers[0]
+		return servers.firstOrNull { it.id == serverId } ?: servers[0]
+	}
+
+	suspend fun selectServer(serverId: String): Boolean {
+		val selected = store.getServers().firstOrNull { it.id == serverId }
+		if (selected == null) {
+			Log.w(TAG, "Failed to select server with ID: $serverId")
+			return false
+		}
+		this.serverId = selected.id
+		this.instanceHost = selected.url
+		Log.i(TAG, "Server selected: ${selected.id}\nthis.serverId: ${this.serverId}\nthis.instanceHost: ${this.instanceHost}")
+		return true
+	}
+
+	private suspend fun getServerAccounts(): List<OwnStreamAccount> {
+		val server = try {
+			getServer()
+		} catch (e: IllegalStateException) {
+			return emptyList()
+		}
+		return store.getAccounts(server.id)
+	}
+
+	private suspend fun getAccount(): OwnStreamAccount {
+		val accounts = store.getAccounts(getServer().id)
+		if (accounts.size == 1) return accounts[0]
+		return accounts.firstOrNull { it.id == accountId } ?: accounts[0]
+	}
+
+	suspend fun selectAccount(accountId: String): Boolean {
+		val selected = store.getAccounts(getServer().id).firstOrNull { it.id == accountId } ?: return false
+		this.accountId = selected.id
+		setAuth(selected.token)
+		return true
+	}
+
+	private suspend fun setAuth(token: String) {
 		this.token = if (token.startsWith("Bearer ")) token.substring("Bearer ".length) else token
 	}
 
@@ -136,12 +192,11 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 
 	suspend fun login(username: String, password: String): ApiResponse<LoginResponse> {
 		val resp = post<LoginResponse>("/api/auth/login", body = LoginRequest(username, password));
-		resp.response?.accessToken?.let { setAuth(it) }
 		return resp
 	}
 
 	suspend fun getInfo() = get<InstanceInfo>("/api/info")
-	suspend fun whoAmI() = get<UserResponse>("/api/auth/whoami")
+	suspend fun whoAmI(token: String? = null) = get<UserResponse>("/api/auth/whoami", tokenOverride = token)
 	suspend fun getHomeShelves() = get<List<Shelf>>("/api/home/shelves")
 	suspend fun getHomeShelf(id: String) = get<List<ShelfItem>>("/api/home/$id")
 	suspend fun getLibraries() = get<List<Library>>("/api/content/library")
@@ -151,7 +206,7 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 		page: Int = 0,
 		limit: Int = 40
 	) = get<PagedResponse<Content>>(
-		"/api/content/library/$libraryId", mapOf(
+		"/api/content/library/${libraryId ?: "00000000-0000-0000-0000-000000000000"}", mapOf(
 			"typeFilter" to typeFilter,
 			"page" to page.toString(),
 			"limit" to limit.toString()
@@ -331,5 +386,9 @@ class OwnStreamApiClient(var instanceHost: String, val userAgent: String) {
 			@Suppress("DEPRECATION")
 			URLEncoder.encode(value)
 		}
+	}
+
+	companion object {
+		private const val TAG = "OwnStreamApiClient"
 	}
 }

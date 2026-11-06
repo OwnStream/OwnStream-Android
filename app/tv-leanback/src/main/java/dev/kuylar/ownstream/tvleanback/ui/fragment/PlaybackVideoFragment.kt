@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.leanback.app.VideoSupportFragment
@@ -28,7 +27,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @OptIn(UnstableApi::class)
-class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFragment.Host {
+class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFragment.Host,
+	AudioTrackSelectorDialogFragment.Host {
 	@Inject
 	lateinit var client: OwnStreamApiClient
 	private lateinit var videoId: String
@@ -157,7 +157,7 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 		super.onDestroyView()
 	}
 
-	override fun getSubtitleOptions(): List<Media3ExoPlayerAdapter.SubtitleOption> {
+	override fun getSubtitleOptions(): List<Media3ExoPlayerAdapter.TrackOption> {
 		return playerAdapter.getSubtitleOptions()
 	}
 
@@ -169,7 +169,7 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 		playerAdapter.disableSubtitles()
 	}
 
-	override fun onSubtitleSelected(option: Media3ExoPlayerAdapter.SubtitleOption) {
+	override fun onSubtitleSelected(option: Media3ExoPlayerAdapter.TrackOption) {
 		playerAdapter.selectSubtitle(option)
 	}
 
@@ -179,5 +179,13 @@ class PlaybackVideoFragment : VideoSupportFragment(), SubtitleSelectorDialogFrag
 			childFragmentManager,
 			SubtitleSelectorDialogFragment.TAG
 		)
+	}
+
+	override fun getAudioTrackOptions(): List<Media3ExoPlayerAdapter.TrackOption> {
+		return playerAdapter.getAudioTrackOptions()
+	}
+
+	override fun onAudioTrackSelected(option: Media3ExoPlayerAdapter.TrackOption) {
+		playerAdapter.selectAudioTrack(option)
 	}
 }
