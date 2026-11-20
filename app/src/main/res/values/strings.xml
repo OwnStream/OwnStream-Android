@@ -64,4 +64,5 @@
 	<string name="job_state_processing_template">Running for %s</string>
 	<string name="job_state_completed_template">Finished %s ago (ran for %s)</string>
 	<string name="job_state_failed_template">Failed %s ago (ran for %s)</string>
+	<string name="login_error_invalid_server">This server doesn\'t seem to be an OwnStream server. Make sure you\'ve entered the URL correctly.</string>
 </resources>

@@ -6,15 +6,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.R
 import dev.kuylar.ownstream.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.jvm.java
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -30,12 +33,29 @@ class MainActivity : AppCompatActivity() {
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
-		if (client.instanceHost == "https://invalid") {
-			startActivity(Intent(this, LoginActivity::class.java))
-			finish()
-			return
+		lifecycleScope.launch(Dispatchers.IO) {
+			// TODO: Currently we only use the first server, with no
+			//  selection or setting a default one
+			val servers = client.store.getServers()
+			val serverId = servers.firstOrNull()?.id
+			val accounts = client.store.getAccounts(serverId ?: "")
+			val accountId = accounts.firstOrNull()?.id
+			if (serverId != null && accountId != null) {
+				client.selectServer(serverId)
+				client.selectAccount(accountId)
+				withContext(Dispatchers.Main) {
+					loadData()
+				}
+			} else {
+				withContext(Dispatchers.Main) {
+					startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+					finish()
+				}
+			}
 		}
+	}
 
+	private fun loadData() {
 		val navHostFragment =
 			supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 		val navController = navHostFragment.navController
