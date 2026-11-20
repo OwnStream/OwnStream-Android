@@ -2,18 +2,22 @@ package dev.kuylar.ownstream.tv.ui.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.api.models.Content
 import dev.kuylar.ownstream.api.models.EpisodeToWatchResponse
+import dev.kuylar.ownstream.api.models.Season
 import dev.kuylar.ownstream.tv.R
 import dev.kuylar.ownstream.tv.databinding.ActivityContentBinding
+import dev.kuylar.ownstream.tv.ui.adapter.SeasonListAdapter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,8 +50,9 @@ class ContentActivity : AppCompatActivity() {
 
 		lifecycleScope.launch(Dispatchers.IO) {
 			runCatching {
-				Pair(
+				Triple(
 					client.getContentDetails(id).response!!,
+					client.getSeasons(id).response ?: emptyList(),
 					client.getEpisodeToWatch(id).response
 				)
 			}.onFailure { e ->
@@ -59,16 +64,23 @@ class ContentActivity : AppCompatActivity() {
 				//(activity as? MainActivity)?.onError(it)
 			}.onSuccess {
 				withContext(Dispatchers.Main) {
-					loadData(it.first, it.second)
+					loadData(it.first, it.second, it.third)
 				}
 			}
 		}
 	}
 
 	@SuppressLint("SetTextI18n")
-	private fun loadData(content: Content, toWatch: EpisodeToWatchResponse?) {
+	private fun loadData(
+		content: Content,
+		seasons: List<Season>,
+		toWatch: EpisodeToWatchResponse?
+	) {
 		binding.contentTitle.text = content.title
-		binding.contentTagline.text = content.tagline
+		if (content.tagline.isNotBlank())
+			binding.contentTagline.text = content.tagline
+		else
+			binding.contentTagline.visibility = View.GONE
 		binding.contentDescription.text = content.description
 
 		// TODO: from settings, fallback to one from server
@@ -106,10 +118,17 @@ class ContentActivity : AppCompatActivity() {
 		if (content.type == "Movie" && video != null) {
 			binding.contentExtraDetailsQuality.text = "${video.width}x${video.height}"
 			binding.contentExtraDetailsDub.text = video.language
+			binding.details.isVisible = true
 		} else {
-			binding.details.isVisible = false
+			binding.seasonsRecycler.layoutManager =
+				LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+			binding.seasonsRecycler.adapter = SeasonListAdapter(this).apply { submitList(seasons) }
+			binding.seasons.isVisible = true
 		}
 
 		Glide.with(this).load(content.images.backdrop).into(binding.backdrop)
+		binding.watch.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+			if (hasFocus) binding.scroll.smoothScrollTo(0, 0)
+		}
 	}
 }

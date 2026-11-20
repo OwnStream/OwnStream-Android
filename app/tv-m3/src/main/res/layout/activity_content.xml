@@ -16,6 +16,7 @@
 		tools:src="@tools:sample/backgrounds/scenic" />
 
 	<ScrollView
+		android:id="@+id/scroll"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
@@ -23,7 +24,6 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
-			android:paddingHorizontal="40dp"
 			android:paddingVertical="64dp">
 
 			<TextView
@@ -31,7 +31,7 @@
 				style="?textAppearanceDisplayLarge"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginHorizontal="12dp"
+				android:layout_marginHorizontal="52dp"
 				tools:text="Lorem Ipsum" />
 
 			<TextView
@@ -39,7 +39,7 @@
 				style="?textAppearanceBodyMediumEmphasized"
 				android:layout_width="500dp"
 				android:layout_height="wrap_content"
-				android:layout_marginHorizontal="12dp"
+				android:layout_marginHorizontal="52dp"
 				android:ellipsize="end"
 				android:maxLines="2"
 				tools:text="Lorem just got Ipsumer" />
@@ -48,7 +48,7 @@
 				android:id="@+id/meta"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginHorizontal="12dp"
+				android:layout_marginHorizontal="52dp"
 				android:layout_marginVertical="8dp">
 
 				<!-- not available in OwnStream yet -->
@@ -106,7 +106,7 @@
 				style="?textAppearanceBodyMedium"
 				android:layout_width="500dp"
 				android:layout_height="wrap_content"
-				android:layout_marginHorizontal="12dp"
+				android:layout_marginHorizontal="52dp"
 				android:ellipsize="end"
 				android:maxLines="2"
 				tools:text="@tools:sample/lorem/random" />
@@ -114,7 +114,8 @@
 			<dev.kuylar.leanbackm3views.component.TvFocusLinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:padding="12dp">
+				android:paddingHorizontal="52dp"
+				android:paddingVertical="12dp">
 
 				<dev.kuylar.leanbackm3views.component.TvButton
 					android:id="@+id/watch"
@@ -124,15 +125,46 @@
 			</dev.kuylar.leanbackm3views.component.TvFocusLinearLayout>
 
 			<LinearLayout
+				android:id="@+id/seasons"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:visibility="gone"
+				tools:visibility="visible">
+
+				<TextView
+					style="?textAppearanceTitleLarge"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginHorizontal="52dp"
+					android:layout_marginTop="8dp"
+					android:text="@string/content_seasons" />
+
+				<dev.kuylar.leanbackm3views.component.TvRecyclerView
+					android:id="@+id/seasons_recycler"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:clipToPadding="false"
+					android:paddingHorizontal="52dp"
+					android:paddingVertical="16dp"
+					tools:layoutManager="LinearLayoutManager"
+					tools:listitem="@layout/item_card_season"
+					tools:orientation="horizontal" />
+			</LinearLayout>
+
+
+			<LinearLayout
 				android:id="@+id/details"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:orientation="vertical"
+				android:visibility="gone"
+				tools:visibility="visible">
 
 				<View
 					android:layout_width="match_parent"
 					android:layout_height="1dp"
-					android:layout_marginHorizontal="12dp"
+					android:layout_marginHorizontal="52dp"
 					android:layout_marginVertical="16dp"
 					android:background="?tvColorBorder" />
 
@@ -140,14 +172,14 @@
 					style="?textAppearanceTitleMedium"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginHorizontal="12dp"
+					android:layout_marginHorizontal="52dp"
 					android:layout_marginVertical="8dp"
 					android:text="@string/content_extra_details" />
 
 				<LinearLayout
 					android:layout_width="500dp"
 					android:layout_height="wrap_content"
-					android:layout_marginHorizontal="12dp"
+					android:layout_marginHorizontal="52dp"
 					android:orientation="horizontal">
 
 					<LinearLayout

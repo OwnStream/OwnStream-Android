@@ -39,4 +39,7 @@
 	<string name="content_extra_details_subs">Subtitles</string>
 	<string name="content_runtime">%dh %dm</string>
 	<string name="content_video_unavailable">Video Unavailable</string>
+	<string name="content_seasons">Seasons</string>
+	<string name="content_season_template">Season %d</string>
+	<string name="content_season_episodes_template">%d episodes</string>
 </resources>
