@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class UserResponse(
 	val id: String,
 	val username: String,
+	val permissions: List<String>
 )
