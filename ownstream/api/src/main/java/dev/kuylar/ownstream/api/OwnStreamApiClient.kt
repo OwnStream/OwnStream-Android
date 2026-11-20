@@ -70,13 +70,13 @@ class OwnStreamApiClient(val store: AccountStore, val userAgent: String) {
 		)
 	}
 
-	private suspend inline fun <reified T> post(url: String, query: Map<String, String?>? = null, body: Any?): ApiResponse<T> {
+	private suspend inline fun <reified T> post(url: String, query: Map<String, String?>? = null, body: Any? = null): ApiResponse<T> {
 		var finalUrl = instanceHost.trimEnd('/') + '/' + url.trimStart('/')
 		val finalQuery = (query ?: emptyMap()).toMutableMap()
 		locale?.let { finalQuery["locale"] = it }
 
 		finalUrl += '?' + finalQuery.entries.filter { it.value != null }.joinToString("&") {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 				"${it.key}=${URLEncoder.encode(it.value, Charsets.UTF_8)}"
 			} else {
 				@Suppress("DEPRECATION")
@@ -120,9 +120,20 @@ class OwnStreamApiClient(val store: AccountStore, val userAgent: String) {
 		)
 	}
 
-	private suspend inline fun <reified T> delete(url: String, body: Any? = null): ApiResponse<T> {
-		val resp = client
-			.post("${instanceHost.trimEnd('/')}/${url.trimStart('/')}") {
+	private suspend inline fun <reified T> delete(url: String, query: Map<String, String?>? = null, body: Any? = null): ApiResponse<T> {
+		var finalUrl = instanceHost.trimEnd('/') + '/' + url.trimStart('/')
+		val finalQuery = (query ?: emptyMap()).toMutableMap()
+		locale?.let { finalQuery["locale"] = it }
+
+		finalUrl += '?' + finalQuery.entries.filter { it.value != null }.joinToString("&") {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				"${it.key}=${URLEncoder.encode(it.value, Charsets.UTF_8)}"
+			} else {
+				@Suppress("DEPRECATION")
+				"${it.key}=${URLEncoder.encode(it.value)}"
+			}
+		}
+		val resp = client.post(finalUrl) {
 				if (body != null) {
 					contentType(ContentType.Application.Json)
 					setBody(body)
@@ -351,7 +362,7 @@ class OwnStreamApiClient(val store: AccountStore, val userAgent: String) {
 	)
 	suspend fun quickLoginSessions() = get<List<QuickLoginSession>>("/api/auth/remote/sessions")
 	suspend fun search(query: String, type: String = "all", offset: Int = 0, limit: Int = 20) =
-		get<SearchResponse>(
+		get<PagedResponse<SearchResult>>(
 			"/api/search", mapOf(
 				"q" to query,
 				"type" to type,
@@ -363,6 +374,53 @@ class OwnStreamApiClient(val store: AccountStore, val userAgent: String) {
 	suspend fun updateSettings(config: JsonObject) = post<JsonObject>("/api/settings/update", body = config)
 	// TODO: /api/settings/benchmark
 
+	suspend fun getContentMetadata(id: String) = get<ContentMetadata>("/api/metadata/content/$id")
+	suspend fun refreshContentMetadata(id: String, apply: Boolean) = post<ContentMetadata>(
+		"/api/metadata/content/$id/refresh",
+		query = mapOf("apply" to apply.toString())
+	)
+	suspend fun setContentMetadata(metadata: ContentMetadata) =
+		patch<SuccessResponse.WithData<ContentMetadata>>(
+			"/api/metadata/content",
+			body = metadata
+		)
+	suspend fun getContentSeasons(id: String) =
+		get<List<Season>>("/api/metadata/content/$id/seasons")
+	suspend fun getSeasonMetadata(id: String, index: Int) =
+		get<SeasonMetadata>("/api/metadata/content/$id/seasons/$index")
+	suspend fun refreshSeasonMetadata(id: String, index: Int, apply: Boolean) =
+		post<SeasonMetadata>(
+			"/api/metadata/content/$id/seasons/$index",
+			query = mapOf("apply" to apply.toString())
+		)
+	suspend fun setSeasonMetadata(metadata: SeasonMetadata) =
+		patch<SuccessResponse.WithData<SeasonMetadata>>(
+			"/api/metadata/content/${metadata.contentId}/seasons/${metadata.index}",
+			body = metadata
+		)
+	suspend fun getEpisodeMetadata(id: String) =
+		get<EpisodeMetadata>("/api/metadata/episode/$id")
+	suspend fun refreshEpisodeMetadata(id: String, apply: Boolean) =
+		post<EpisodeMetadata>(
+			"/api/metadata/episode/$id",
+			query = mapOf("apply" to apply.toString())
+		)
+	suspend fun setEpisodeMetadata(metadata: EpisodeMetadata) =
+		patch<SuccessResponse.WithData<EpisodeMetadata>>(
+			"/api/metadata/episode/${metadata.id}",
+			body = metadata
+		)
+	suspend fun searchProviders(providerId: String, contentId: String) =
+		get<SuccessResponse.WithData<List<PluginContentSearchResult>>>(
+			"/api/metadata/search/$providerId", mapOf("contentId" to contentId)
+		)
+
+	suspend fun listPlugins() = get<List<PluginItem>>("/api/plugins/list")
+	suspend fun enablePlugin(path: String) = post<SuccessResponse>("/api/plugins/enable", mapOf("path" to path))
+	suspend fun disablePlugin(path: String) = post<SuccessResponse>("/api/plugins/disable", mapOf("path" to path))
+	// TODO: /api/plugins/install
+	suspend fun deletePlugin(path: String) = delete<SuccessResponse>("/api/plugins/enable", mapOf("path" to path))
+	suspend fun reloadPlugin(path: String) = post<SuccessResponse>("/api/plugins/reload", mapOf("path" to path))
 
 	fun getMediaUrl(
 		videoId: String,
