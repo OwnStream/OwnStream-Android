@@ -22,6 +22,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -122,7 +123,8 @@ class ContentActivity : AppCompatActivity() {
 		} else {
 			binding.seasonsRecycler.layoutManager =
 				LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-			binding.seasonsRecycler.adapter = SeasonListAdapter(this).apply { submitList(seasons) }
+			binding.seasonsRecycler.adapter = SeasonListAdapter(this, Json.encodeToString(content))
+				.apply { submitList(seasons) }
 			binding.seasons.isVisible = true
 		}
 

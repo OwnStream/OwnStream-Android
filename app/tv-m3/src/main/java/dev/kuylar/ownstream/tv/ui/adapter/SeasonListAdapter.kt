@@ -1,6 +1,7 @@
 package dev.kuylar.ownstream.tv.ui.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -10,8 +11,10 @@ import com.bumptech.glide.Glide
 import dev.kuylar.ownstream.api.models.Season
 import dev.kuylar.ownstream.tv.R
 import dev.kuylar.ownstream.tv.databinding.ItemCardSeasonBinding
+import dev.kuylar.ownstream.tv.ui.activity.SeasonActivity
+import kotlinx.serialization.json.Json
 
-class SeasonListAdapter(context: Context) :
+class SeasonListAdapter(context: Context, private val contentJson: String) :
 	ListAdapter<Season, SeasonListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Season>() {
 		override fun areItemsTheSame(a: Season, b: Season) = a.index == b.index
 		override fun areContentsTheSame(a: Season, b: Season) = a == b
@@ -27,6 +30,12 @@ class SeasonListAdapter(context: Context) :
 			setTitle(item.translatedTitle ?: item.title ?: context.getString(R.string.content_season_template, item.index))
 			setExtraText(context.getString(R.string.content_season_episodes_template, item.episodeCount))
 			Glide.with(this).load(item.poster).into(getImageView()!!)
+			setOnClickListener {
+				context.startActivity(Intent(context, SeasonActivity::class.java).apply {
+					putExtra("contentJson", contentJson)
+					putExtra("seasonJson", Json.encodeToString(item))
+				})
+			}
 		}
 	}
 

@@ -67,6 +67,10 @@
 			android:name=".ui.activity.ContentActivity"
 			android:exported="false"
 			android:windowSoftInputMode="adjustResize" />
+		<activity
+			android:name=".ui.activity.SeasonActivity"
+			android:exported="false"
+			android:windowSoftInputMode="adjustResize" />
 	</application>
 
 </manifest>

@@ -42,4 +42,5 @@
 	<string name="content_seasons">Seasons</string>
 	<string name="content_season_template">Season %d</string>
 	<string name="content_season_episodes_template">%d episodes</string>
+	<string name="content_episode_extra_template">%s • %dx%d</string>
 </resources>
