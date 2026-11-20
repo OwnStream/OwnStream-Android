@@ -65,7 +65,7 @@ class SearchProvider : ContentProvider() {
 					SearchManager.SUGGEST_COLUMN_DURATION,
 				)
 			)
-			results.response?.results?.mapNotNull {
+			results.response?.items?.mapNotNull {
 				client.getContentDetails(it.contentId ?: it.id).response
 			}?.forEachIndexed { i, it ->
 				// TODO: Return more data from the server
