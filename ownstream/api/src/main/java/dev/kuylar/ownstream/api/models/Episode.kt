@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Episode(
 	val id: String,
-	val seasonNumber: Long,
-	val episodeNumber: Long,
+	val seasonNumber: Int,
+	val episodeNumber: Int,
 	val originalTitle: String,
 	val translatedTitle: String? = null,
 	val originalSummary: String,

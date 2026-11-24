@@ -1,6 +1,7 @@
 package dev.kuylar.ownstream.tv.ui.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -112,7 +113,9 @@ class ContentActivity : AppCompatActivity() {
 			}
 			binding.watch.setText(text)
 			binding.watch.setOnClickListener {
-				Toast.makeText(this, "Play: ${video.id}", Toast.LENGTH_LONG).show()
+				startActivity(Intent(this, PlayerActivity::class.java).apply {
+					putExtra("videoId", video.id)
+				})
 			}
 		} else binding.watch.setText(getString(R.string.content_video_unavailable))
 

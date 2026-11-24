@@ -15,6 +15,7 @@ import dev.kuylar.leanbackm3views.util.dp
 import dev.kuylar.ownstream.api.OwnStreamApiClient
 import dev.kuylar.ownstream.tv.R
 import dev.kuylar.ownstream.tv.ui.activity.ContentActivity
+import dev.kuylar.ownstream.tv.ui.activity.PlayerActivity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,11 +82,13 @@ class HomeFragment : BaseShelfFragment() {
 					height = 180,
 					onClick = {
 						if (it.type == "episode" || it.type == "video") {
-							Toast.makeText(
-								requireContext(),
-								"Play: ${it.videoId}",
-								Toast.LENGTH_SHORT
-							).show()
+							context?.startActivity(
+								Intent(
+									context,
+									PlayerActivity::class.java
+								).apply {
+									putExtra("videoId", it.videoId)
+								})
 						} else {
 							startActivity(
 								Intent(

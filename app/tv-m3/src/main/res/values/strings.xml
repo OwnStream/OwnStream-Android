@@ -43,4 +43,14 @@
 	<string name="content_season_template">Season %d</string>
 	<string name="content_season_episodes_template">%d episodes</string>
 	<string name="content_episode_extra_template">%s • %dx%d</string>
+	<string name="video_player_episode_template">%dx%02d: %s</string>
+	<string name="video_player_default_title">Video</string>
+	<string name="video_player_dub">Audio Track</string>
+	<string name="video_player_sub">Subtitle</string>
+	<string name="video_player_episodes">Episodes</string>
+	<string name="none">None</string>
+	<string name="subtitle_selector_unlabeled">Subtitle #%d</string>
+	<string name="subtitle_selector_template">%s • %s</string>
+	<string name="audio_selector_unlabeled">Track #%d</string>
+	<string name="audio_selector_template">%s • %s</string>
 </resources>

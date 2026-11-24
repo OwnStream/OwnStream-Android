@@ -1,6 +1,7 @@
 package dev.kuylar.ownstream.tv.ui.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -11,6 +12,7 @@ import com.bumptech.glide.Glide
 import dev.kuylar.ownstream.api.models.Episode
 import dev.kuylar.ownstream.tv.R
 import dev.kuylar.ownstream.tv.databinding.ItemCardEpisodeBinding
+import dev.kuylar.ownstream.tv.ui.activity.PlayerActivity
 
 class EpisodeListAdapter(context: Context) :
 	ListAdapter<Episode, EpisodeListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Episode>() {
@@ -42,7 +44,9 @@ class EpisodeListAdapter(context: Context) :
 					)
 				)
 				setOnClickListener {
-					Toast.makeText(context, "Play: ${video.id}", Toast.LENGTH_LONG).show()
+					context.startActivity(Intent(context, PlayerActivity::class.java).apply {
+						putExtra("videoId", video.id)
+					})
 				}
 			}
 			Glide.with(this).load(item.thumbnail).into(getImageView()!!)
